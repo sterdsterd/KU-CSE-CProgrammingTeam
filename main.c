@@ -1,4 +1,3 @@
-// 202211274 김수현
 #define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<Windows.h>
@@ -25,9 +24,11 @@ struct DifficultyCon {
 };
 int cx, cy, mapSize, sightSize, objectAmount, difficulty;
 char playerShow;
-struct DifficultyCon difficultyCons[3] = { {51,11,10},{101,21,30},{151,31,50} };
+const int consoleSizeX = 100 ,consoleSizeY = 40,centerX=50,centerY=20;
+const struct DifficultyCon difficultyCons[3] = { {51,11,10},{101,21,30},{151,31,50} };
 struct Object objects[100];
 int main(void) {
+	setConsoleSize(consoleSizeX , consoleSizeY);
 	hideCursor();
 	while (1) {
 		gameRobby();
@@ -56,7 +57,6 @@ void gameInit(void) {
 	mapSize = difficultyCons[difficulty].mapSize;
 	objectAmount = difficultyCons[difficulty].objectAmount;
 
-	setConsoleSize(sightSize * 2, sightSize);
 
 	for (i = 0; i < objectAmount; i++) {
 		objects[i].category = 0;
@@ -87,11 +87,11 @@ void printMap(void) {
 	for (i = 0; i < sightSize; i++) {
 		for (j = 0; j < sightSize; j++) {
 			if (i == 0 || i == sightSize - 1 || j == 0 || j == sightSize - 1) { //시야 범위 표시
-				printcharxy(i, j, '*');
+				printcharxy(i+centerX/2-sightSize/2, j+centerY-sightSize/2, '*');
 			}
 			else {
 				if (i == sightSize / 2 && j == sightSize / 2) {       //플레이어 표시
-					printcharxy(i, j, playerShow);
+					printcharxy(i + centerX/2 - sightSize / 2, j + centerY - sightSize / 2, playerShow);
 				}
 			}
 		}
@@ -100,11 +100,11 @@ void printMap(void) {
 		int x = sightSize / 2 + objects[i].x - cx;
 		int y = sightSize / 2 + objects[i].y - cy;
 		if (x > 0 && x < sightSize - 1 && y>0 && y < sightSize) {
-			printcharxy(sightSize / 2 + objects[i].x - cx, sightSize / 2 + objects[i].y - cy, '!');
+			printcharxy(objects[i].x - cx+centerX/2, objects[i].y - cy+centerY, '!');
 		}
 
 	}
-	updateInfo();
+	//updateInfo();
 }
 void clearMap(void) {
 	int i, j;
