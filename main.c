@@ -16,6 +16,7 @@ int collisionCheck(void);
 void gameOver(void);
 void printcharxy(int x, int y, char c);
 void setConsoleSize(int, int);
+void hideCursor();
 struct Object {
 	int x, y, category;
 };
@@ -27,6 +28,7 @@ char playerShow;
 struct DifficultyCon difficultyCons[3] = { {51,11,10},{101,21,30},{151,31,50} };
 struct Object objects[100];
 int main(void) {
+	hideCursor();
 	while (1) {
 		gameRobby();
 		gameInit();
@@ -182,4 +184,12 @@ void move(void) {
 void setConsoleSize(int x, int y) {
 	SMALL_RECT windowSize = { 0 , 0 , x , y };
 	SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &windowSize);
+}
+
+void hideCursor() {
+	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO info;
+	info.dwSize = 100;
+	info.bVisible = FALSE;
+	SetConsoleCursorInfo(consoleHandle, &info);
 }
