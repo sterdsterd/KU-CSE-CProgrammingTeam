@@ -17,6 +17,7 @@ void printcharxy(int x, int y, char c);
 void setConsoleSize(int, int);
 void hideCursor();
 void clearCoord(int, int);
+void gotoxy(int, int);
 struct Coord {
 	int x, y;
 };
@@ -175,22 +176,24 @@ void printInfo(void) {
 }
 
 //출력 관련 부분
-void printstringxy(int x, int y, char s[]) {
-	COORD Cur = { x,y };
+void gotoxy(int x, int y) {
+	COORD Cur = { x, y };
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Cur);
+}
+
+void printstringxy(int x, int y, char s[]) {
+	gotoxy(x, y);
 	printf("%s", s);
 }
 void printcharxy(int x, int y, char c) {
-	COORD Cur = { x,y };
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Cur);
+	gotoxy(x, y);
 	printf("%c", c);
 }
 void clearScreen(void) {
 	system("cls");
 }
 void clearCoord(int x, int y) {
-	COORD Cur = { x,y };
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Cur);
+	gotoxy(x, y);
 	printf(" ");
 }
 
