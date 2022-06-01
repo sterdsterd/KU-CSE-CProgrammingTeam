@@ -59,7 +59,7 @@ void initGame() {
 	charY = mapSize / 2;
 
 	// difficulty에 맞게 map 배열 mapSize * mapSize 크기로 동적 할당
-	map = (Object**)malloc(sizeof(Object) * mapSize);
+	map = (Object**)malloc(sizeof(Object*) * mapSize);
 	for (int i = 0; i < mapSize; i++) {
 		map[i] = (Object*)malloc(sizeof(Object) * mapSize);
 	}
@@ -150,6 +150,13 @@ void printSight() {
 }
 
 void gameOver() {
+
+	// 동적할당 해제
+	for (int i = 0; i < mapSize; i++) {
+		free(map[i]);
+	}
+	free(map);
+
 	system("cls");
 	printString(10, 10, "GAME OVER");
 	printString(10, 12, "Press any key to continue");
