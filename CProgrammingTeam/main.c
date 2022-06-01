@@ -10,6 +10,7 @@ int difficulty;
 const Difficulty difficultyCons[3] = {{51, 11, 20}, {101, 21, 30}, {151, 31, 50}};
 int charX, charY, mapSize, sightSize, bombAmount;
 int consoleX = 100, consoleY = 50;
+int moveCount = 0;
 
 int main() {
 	hideConsoleCursor();
@@ -47,9 +48,11 @@ void initLobby() {
 }
 
 void initGame() {
+
 	mapSize = difficultyCons[difficulty].mapSize;
 	sightSize = difficultyCons[difficulty].sightSize;
 	bombAmount = difficultyCons[difficulty].bombAmount;
+	moveCount = 50; // 얘도 난이도 따라 조정 필요
 
 	// 캐릭터의 x, y값 -> 맵 정중앙
 	charX = mapSize / 2;
@@ -109,6 +112,8 @@ void move() {
 		} else {
 			charX += dx;
 			charY += dy;
+			// 이동횟수 감소 및 없으면 게임 오버
+			if (--moveCount < 0) break;
 		}
 
 		printSight();
@@ -116,6 +121,10 @@ void move() {
 }
 
 void printSight() {
+
+	gotoxy(0, 0);
+	printf("남은 이동 횟수: %d  ", moveCount);
+
 	// startX, startY = 맵 프린트 시작 위치
 	int startX = (consoleX / 2 - sightSize) / 2, startY = (consoleY - sightSize) / 2;
 	gotoxy(startX - 1, startY - 1);
