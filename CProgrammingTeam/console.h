@@ -40,6 +40,6 @@ void printQuote(char* name, char* line) {
 
 	gotoxy(1, 43);
 	printf("%s", line);
-	_getch();
+	//_getch();
 
 }

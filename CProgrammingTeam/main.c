@@ -82,6 +82,22 @@ void initGame() {
 		map[x][y].isActive = 1;
 	}
 
+	// 시야 증가
+	for (int i = 0; i < 10; i++) {
+		int x = rand() % (mapSize - 2) + 1;
+		int y = rand() % (mapSize - 2) + 1;
+		map[x][y].category = 'S';
+		map[x][y].isActive = 1;
+	}
+
+	// 시야 감소
+	for (int i = 0; i < 10; i++) {
+		int x = rand() % (mapSize - 2) + 1;
+		int y = rand() % (mapSize - 2) + 1;
+		map[x][y].category = 's';
+		map[x][y].isActive = 1;
+	}
+
 }
 
 void playGame() {
@@ -106,19 +122,38 @@ void move() {
 		if (charX + dx <= 0 || charX + dx >= mapSize - 1 || charY + dy <= 0 || charY + dy >= mapSize - 1)
 			continue;
 
-		// 폭탄일 경우 게임 오버
-		if (map[charX + dx][charY + dy].category == 'B') {
-			printQuote("알림", "폭탄을 밟았습니다.");
-			break;
-		} else {
-			charX += dx;
-			charY += dy;
-			// 이동횟수 감소 및 없으면 게임 오버
-			if (--moveCount < 0) break;
-		}
+		// 충돌 체크
+		if (collisionCheck(map, dx, dy)) break;
 
 		printSight();
 	}
+}
+
+int collisionCheck(Object** map, int dx, int dy) {
+	switch (map[charX + dx][charY + dy].category) {
+	case 'B':
+		printQuote("알림", "폭탄을 밟았습니다.");
+		return 1;
+
+	case 'S':
+		printQuote("알림", "시야가 증가되었습니다.");
+		sightSize += 10;
+		map[charX + dx][charY + dy].category = '.';
+		break;
+
+	case 's':
+		printQuote("알림", "시야가 감소되었습니다.");
+		map[charX + dx][charY + dy].category = '.';
+		sightSize -= 10;
+		break;
+	}
+
+	charX += dx;
+	charY += dy;
+	// 이동횟수 감소 및 없으면 게임 오버
+	if (--moveCount < 0) return 1;
+
+	return 0;
 }
 
 void printSight() {

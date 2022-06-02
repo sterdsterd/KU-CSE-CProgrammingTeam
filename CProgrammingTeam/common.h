@@ -16,27 +16,13 @@ typedef struct Difficulty {
 	int bombAmount;
 } Difficulty;
 
-/*
-void debug() {
-	gotoxy(0, 0);
-	for (int y = 0; y < mapSize; y++) {
-		for (int x = 0; x < mapSize; x++) {
-			printf("%c ", map[x][y].category);
-		}
-		printf("\n");
-	}
-
-	gotoxy(charX, charY);
-	printf("#");
-}
-*/
-
 void initLobby();
 void initGame();
 void printSight();
 void move();
 void playGame();
 void gameOver();
+int collisionCheck(Object** map, int dx, int dy);
 char categoryToChar(char c) {
 	if (c == 'B') return '!';
 	else if (c == '.') return ' ';
