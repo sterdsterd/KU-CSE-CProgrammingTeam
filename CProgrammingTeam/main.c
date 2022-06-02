@@ -7,7 +7,7 @@
 
 Object** map = NULL;
 int difficulty;
-const Difficulty difficultyCons[3] = {{51, 11, 20}, {101, 21, 30}, {151, 31, 50}};
+const Difficulty difficultyCons[3] = { {51, 11, 20}, {101, 21, 30}, {151, 31, 50} };
 int charX, charY, mapSize, sightSize, bombAmount;
 int consoleX = 100, consoleY = 50;
 int moveCount = 0;
@@ -68,7 +68,8 @@ void initGame() {
 		for (int y = 0; y < mapSize; y++) {
 			if (x == 0 || x == mapSize - 1 || y == 0 || y == mapSize - 1) {
 				map[x][y].category = 'W';
-			} else {
+			}
+			else {
 				map[x][y].category = '.';
 			}
 		}
@@ -98,6 +99,22 @@ void initGame() {
 		map[x][y].isActive = 1;
 	}
 
+	// 이동 횟수 증가
+	for (int i = 0; i < 10; i++) {
+		int x = rand() % (mapSize - 2) + 1;
+		int y = rand() % (mapSize - 2) + 1;
+		map[x][y].category = 'M';
+		map[x][y].isActive = 1;
+	}
+
+	// 이동 횟수 증가
+	for (int i = 0; i < 10; i++) {
+		int x = rand() % (mapSize - 2) + 1;
+		int y = rand() % (mapSize - 2) + 1;
+		map[x][y].category = 'm';
+		map[x][y].isActive = 1;
+	}
+
 }
 
 void playGame() {
@@ -117,7 +134,7 @@ void move() {
 		else if (ch == 'a') dx--;
 		else if (ch == 's') dy++;
 		else if (ch == 'd') dx++;
-		
+
 		// 맵 밖으로 벗어나지 못하게
 		if (charX + dx <= 0 || charX + dx >= mapSize - 1 || charY + dy <= 0 || charY + dy >= mapSize - 1)
 			continue;
@@ -146,6 +163,19 @@ int collisionCheck(Object** map, int dx, int dy) {
 		map[charX + dx][charY + dy].category = '.';
 		sightSize -= 10;
 		break;
+
+	case 'M':
+		printQuote("알림", "이동 횟수가 증가되었습니다.");
+		map[charX + dx][charY + dy].category = '.';
+		moveCount += 15;
+		break;
+
+	case 'm':
+		printQuote("알림", "이동 횟수가 감소되었습니다.");
+		map[charX + dx][charY + dy].category = '.';
+		moveCount -= 15;
+		break;
+
 	}
 
 	charX += dx;
