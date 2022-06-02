@@ -22,3 +22,24 @@ void printString(int x, int y, char s[]) {
 	gotoxy(x, y);
 	printf("%s", s);
 }
+
+void printQuote(char* name, char* line) {
+	gotoxy(0, 40);
+	printf("+---------------+\n| %s", name);
+	gotoxy(8, 41);
+	printf("|\n");
+	printf("+--------------------------------------------------------------------------------------------------+\n");
+	printf("|                                                                                                  |\n");
+	printf("|                                                                                                  |\n");
+	printf("|                                                                                                  |\n");
+	printf("|                                                                                                  |\n");
+	printf("|                                                                                                  |\n");
+	printf("|                                                                                                  |\n");
+	printf("|                                                                                                  |\n");
+	printf("+--------------------------------------------------------------------------------------------------+");
+
+	gotoxy(1, 43);
+	printf("%s", line);
+	_getch();
+
+}

@@ -108,6 +108,7 @@ void move() {
 
 		// 폭탄일 경우 게임 오버
 		if (map[charX + dx][charY + dy].category == 'B') {
+			printQuote("알림", "폭탄을 밟았습니다.");
 			break;
 		} else {
 			charX += dx;
