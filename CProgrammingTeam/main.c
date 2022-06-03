@@ -198,6 +198,7 @@ int collisionCheck(Object** map, int dx, int dy) {
 
 	charX += dx;
 	charY += dy;
+	score++;
 	// 이동횟수 감소 및 없으면 게임 오버
 	if (--moveCount < 0) return 1;
 
@@ -243,7 +244,8 @@ void gameOver() {
 
 	system("cls");
 	printString(10, 10, "GAME OVER");
-	printString(10, 12, "SCORE: " + score);
+	gotoxy(10, 12);
+	printf("SCORE: %d", score);
 	printString(10, 14, "Press any key to continue");
 
 	score = 0;
