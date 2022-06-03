@@ -8,18 +8,27 @@
 Object** map = NULL;
 int difficulty;
 const Difficulty difficultyCons[3] = {{51, 11, 20, 50}, {101, 21, 30, 100}, {151, 31, 50, 150}};
-int charX, charY, mapSize, sightSize, bombAmount;
+int charX, charY, mapSize, sightSize, bombAmount, moveCount;
 int consoleX = 100, consoleY = 50;
-int moveCount = 0;
+int score = 0;
 
 int main() {
 	hideConsoleCursor();
 	setConsoleSize(consoleX, consoleY);
+	if (initLobby()) return 0;
 	for (;;) {
-		if(initLobby()) break;
 		initGame();
-		playGame();
-		gameOver();
+		if (playGame() == 1) {
+			gameOver();
+			if (initLobby()) break;
+		}
+		else {
+			difficulty++;
+			for (int i = 0; i < mapSize; i++) {
+				free(map[i]);
+			}
+			free(map);
+		}
 	}
 
 	return 0;
@@ -71,12 +80,17 @@ void initGame() {
 		for (int y = 0; y < mapSize; y++) {
 			if (x == 0 || x == mapSize - 1 || y == 0 || y == mapSize - 1) {
 				map[x][y].category = 'W';
-			}
-			else {
+			} else {
 				map[x][y].category = '.';
 			}
 		}
 	}
+
+	// 보물 생성
+	int x = rand() % (mapSize - 2) + 1;
+	int y = rand() % (mapSize - 2) + 1;
+	map[x][y].category = 'T';
+	map[x][y].isActive = 1;
 
 	// 폭탄 생성
 	for (int i = 0; i < bombAmount; i++) {
@@ -120,12 +134,8 @@ void initGame() {
 
 }
 
-void playGame() {
+int playGame() {
 	system("cls");
-	move();
-}
-
-void move() {
 	printSight();
 
 	char ch;
@@ -143,7 +153,8 @@ void move() {
 			continue;
 
 		// 충돌 체크
-		if (collisionCheck(map, dx, dy)) break;
+		int c = collisionCheck(map, dx, dy);
+		if (c) return c;
 
 		printSight();
 	}
@@ -151,6 +162,10 @@ void move() {
 
 int collisionCheck(Object** map, int dx, int dy) {
 	switch (map[charX + dx][charY + dy].category) {
+	case 'T':
+		printQuote("알림", "보물을 찾았습니다.");
+		return 2;
+
 	case 'B':
 		printQuote("알림", "폭탄을 밟았습니다.");
 		return 1;
@@ -228,6 +243,9 @@ void gameOver() {
 
 	system("cls");
 	printString(10, 10, "GAME OVER");
-	printString(10, 12, "Press any key to continue");
+	printString(10, 12, "SCORE: " + score);
+	printString(10, 14, "Press any key to continue");
+
+	score = 0;
 	_getch();
 }

@@ -21,7 +21,7 @@ int initLobby();
 void initGame();
 void printSight();
 void move();
-void playGame();
+int playGame();
 void gameOver();
 int collisionCheck(Object** map, int dx, int dy);
 char categoryToChar(char c) {
