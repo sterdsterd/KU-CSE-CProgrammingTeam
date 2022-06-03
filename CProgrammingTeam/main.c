@@ -7,7 +7,7 @@
 
 Object** map = NULL;
 int difficulty;
-const Difficulty difficultyCons[3] = { {51, 11, 20}, {101, 21, 30}, {151, 31, 50} };
+const Difficulty difficultyCons[3] = {{51, 11, 20, 50}, {101, 21, 30, 100}, {151, 31, 50, 150}};
 int charX, charY, mapSize, sightSize, bombAmount;
 int consoleX = 100, consoleY = 50;
 int moveCount = 0;
@@ -52,7 +52,7 @@ void initGame() {
 	mapSize = difficultyCons[difficulty].mapSize;
 	sightSize = difficultyCons[difficulty].sightSize;
 	bombAmount = difficultyCons[difficulty].bombAmount;
-	moveCount = 50; // 얘도 난이도 따라 조정 필요
+	moveCount = difficultyCons[difficulty].moveCount;
 
 	// 캐릭터의 x, y값 -> 맵 정중앙
 	charX = mapSize / 2;

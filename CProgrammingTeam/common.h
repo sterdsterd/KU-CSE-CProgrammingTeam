@@ -14,6 +14,7 @@ typedef struct Difficulty {
 	int mapSize;
 	int sightSize;
 	int bombAmount;
+	int moveCount;
 } Difficulty;
 
 void initLobby();
