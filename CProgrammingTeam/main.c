@@ -16,7 +16,7 @@ int main() {
 	hideConsoleCursor();
 	setConsoleSize(consoleX, consoleY);
 	for (;;) {
-		initLobby();
+		if(initLobby()) break;
 		initGame();
 		playGame();
 		gameOver();
@@ -25,7 +25,7 @@ int main() {
 	return 0;
 }
 
-void initLobby() {
+int initLobby() {
 	char ch;
 	system("cls");
 	printString(10, 9, "난이도를 선택하세요");
@@ -38,12 +38,15 @@ void initLobby() {
 	printString(10, 19, "+-------------------------+");
 	printString(10, 20, "| 2. HARD                 |");
 	printString(10, 21, "+-------------------------+");
+	printString(10, 23, "+-------------------------+");
+	printString(10, 24, "| 3. 종료                 |");
+	printString(10, 25, "+-------------------------+");
 	while (1) {
 		ch = _getch();
 		if (ch >= '0' && ch <= '2') {
 			difficulty = ch - '0';
-			break;
-		}
+			return 0;
+		} else if (ch == '3') return 1;
 	}
 }
 

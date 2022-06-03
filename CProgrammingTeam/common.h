@@ -17,7 +17,7 @@ typedef struct Difficulty {
 	int moveCount;
 } Difficulty;
 
-void initLobby();
+int initLobby();
 void initGame();
 void printSight();
 void move();
