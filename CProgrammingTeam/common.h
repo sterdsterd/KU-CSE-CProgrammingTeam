@@ -10,6 +10,11 @@ typedef struct Object {
 	char category;
 } Object;
 
+typedef struct Score {
+	char name[10];
+	int score;
+} Score;
+
 typedef struct Difficulty {
 	int mapSize;
 	int sightSize;
@@ -20,7 +25,6 @@ typedef struct Difficulty {
 int initLobby();
 void initGame();
 void printSight();
-void move();
 int playGame();
 void gameOver();
 int collisionCheck(Object** map, int dx, int dy);

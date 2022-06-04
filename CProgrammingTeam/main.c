@@ -6,11 +6,12 @@
 #include "console.h"
 
 Object** map = NULL;
+Score rank[10];
 int difficulty;
 const Difficulty difficultyCons[3] = {{51, 11, 20, 50}, {101, 21, 30, 100}, {151, 31, 50, 150}};
 int charX, charY, mapSize, sightSize, bombAmount, moveCount;
 int consoleX = 100, consoleY = 50;
-int score = 0;
+int score = 0, rankSize = 0;
 
 int main() {
 	hideConsoleCursor();
@@ -21,9 +22,9 @@ int main() {
 		if (playGame() == 1) {
 			gameOver();
 			if (initLobby()) break;
-		}
-		else {
+		} else {
 			difficulty++;
+			score += 200;
 			for (int i = 0; i < mapSize; i++) {
 				free(map[i]);
 			}
@@ -246,8 +247,16 @@ void gameOver() {
 	printString(10, 10, "GAME OVER");
 	gotoxy(10, 12);
 	printf("SCORE: %d", score);
-	printString(10, 14, "Press any key to continue");
-
+	printString(10, 14, "NAME : ");
+	scanf("%s", &rank[rankSize].name);
+	rank[rankSize].score = score;
+	rankSize++;
 	score = 0;
+	system("cls");
+	gotoxy(10, 10);
+	printf("=== ·© Å· ===\n");
+	for (int i = 0; i < rankSize; i++) {
+		printf("                    %s: %dÁ¡\n", rank[i].name, rank[i].score);
+	}
 	_getch();
 }
