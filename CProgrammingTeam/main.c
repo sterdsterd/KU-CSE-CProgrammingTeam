@@ -210,7 +210,6 @@ void printSight() {
 
 	gotoxy(0, 0);
 	printf("남은 이동 횟수: %d  ", moveCount);
-
 	// startX, startY = 맵 프린트 시작 위치
 	int startX = (consoleX / 2 - sightSize) / 2, startY = (consoleY - sightSize) / 2;
 	gotoxy(startX - 1, startY - 1);
@@ -229,7 +228,10 @@ void printSight() {
 		}
 		gotoxy(startX - 1, startY + i);
 	}
-
+	gotoxy(startX - 1, startY + sightSize + 1);
+	printf("좌표: (%d,%d)", charX, charY);
+	gotoxy(startX - 1, startY + sightSize + 2);
+	printf("점수: %d", score);
 	// DEBUG
 	// gotoxy(0, 0);
 	// printf("x: %d; y: %d        ", charX, charY);
