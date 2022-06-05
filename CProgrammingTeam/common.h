@@ -25,6 +25,7 @@ typedef struct Difficulty {
 int initLobby();
 void initGame();
 void printSight();
+void clearSight();
 int playGame();
 void gameOver();
 int collisionCheck(Object** map, int dx, int dy);
