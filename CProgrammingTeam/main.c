@@ -178,6 +178,7 @@ int playGame() {
 		else if (ch == 'a') dx--;
 		else if (ch == 's') dy++;
 		else if (ch == 'd') dx++;
+		else continue;
 
 		// 맵 밖으로 벗어나지 못하게
 		if (charX + dx <= 0 || charX + dx >= mapSize - 1 || charY + dy <= 0 || charY + dy >= mapSize - 1)
@@ -260,12 +261,9 @@ void printSight() {
 		gotoxy(startX - 1, startY + i);
 	}
 	gotoxy(startX - 1, startY + sightSize + 1);
-	printf("좌표: (%d,%d)", charX, charY);
+	printf("좌표: (%d, %d)   ", charX, charY);
 	gotoxy(startX - 1, startY + sightSize + 2);
 	printf("점수: %d", score);
-	// DEBUG
-	// gotoxy(0, 0);
-	// printf("x: %d; y: %d        ", charX, charY);
 }
 
 void clearSight() {
