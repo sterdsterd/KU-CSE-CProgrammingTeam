@@ -43,3 +43,10 @@ void printQuote(char* name, char* line) {
 	//_getch();
 
 }
+
+void printSequence(char* str) {
+	for (int i = 0; i < strlen(str); i++) {
+		printf("%c", str[i]);
+		Sleep(100);
+	}
+}

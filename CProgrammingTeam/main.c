@@ -46,7 +46,8 @@ int initLobby() {
 	int key;
 	int diff = 0;
 	system("cls");
-	printString(10, 9, "난이도를 선택하세요");
+	gotoxy(10, 9);
+	printSequence("난이도를 선택하세요");
 	printString(10, 11, "+-------------------------+");
 	printString(10, 12, "| EASY                  < |");
 	printString(10, 13, "+-------------------------+");
