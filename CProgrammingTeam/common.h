@@ -20,6 +20,8 @@ typedef struct Difficulty {
 	int sightSize;
 	int bombAmount;
 	int moveCount;
+	int maxSight;
+	int minSight;
 } Difficulty;
 
 int initLobby();

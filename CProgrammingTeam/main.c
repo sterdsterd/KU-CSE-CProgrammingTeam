@@ -10,11 +10,11 @@ Score rank[10];
 int difficulty;
 const Difficulty difficultyCons[3] = {
 	// EASY
-	{.mapSize = 51, .sightSize = 11, .bombAmount = 20, .moveCount = 50},
+	{.mapSize = 51, .sightSize = 11, .bombAmount = 20, .moveCount = 50, .minSight = 7, .maxSight = 23},
 	// NORMAL
-	{.mapSize = 101, .sightSize = 21, .bombAmount = 30, .moveCount = 100},
+	{.mapSize = 101, .sightSize = 21, .bombAmount = 30, .moveCount = 100, .minSight = 11, .maxSight = 33},
 	//HARD
-	{.mapSize = 151, .sightSize = 31, .bombAmount = 50, .moveCount = 150}
+	{.mapSize = 151, .sightSize = 31, .bombAmount = 50, .moveCount = 150, .minSight = 21, .maxSight = 43}
 };
 int charX, charY, mapSize, sightSize, bombAmount, moveCount;
 int consoleX = 100, consoleY = 50;
@@ -203,16 +203,24 @@ int collisionCheck(Object** map, int dx, int dy) {
 		return 1;
 
 	case 'S':
-		printQuote("알림", "시야가 증가되었습니다.");
-		sightSize += 10;
+		if (sightSize + 4 <= difficultyCons[difficulty].maxSight) {
+			sightSize += 4;
+			printQuote("알림", "시야가 증가되었습니다.");
+		} else {
+			printQuote("알림", "최대 시야");
+		}
 		map[charX + dx][charY + dy].category = '.';
 		break;
 
 	case 's':
-		printQuote("알림", "시야가 감소되었습니다.");
-		clearSight();
+		if (sightSize - 4 >= difficultyCons[difficulty].minSight) {
+			clearSight();
+			sightSize -= 4;
+			printQuote("알림", "시야가 감소되었습니다.");
+		} else {
+			printQuote("알림", "최소 시야");
+		}
 		map[charX + dx][charY + dy].category = '.';
-		sightSize -= 10;
 		break;
 
 	case 'M':
