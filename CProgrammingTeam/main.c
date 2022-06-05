@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+ï»¿#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <conio.h>
 #include <stdlib.h>
@@ -36,27 +36,50 @@ int main() {
 }
 
 int initLobby() {
-	char ch;
+	int key;
+	int diff = 0;
 	system("cls");
-	printString(10, 9, "³­ÀÌµµ¸¦ ¼±ÅÃÇÏ¼¼¿ä");
+	printString(10, 9, "ë‚œì´ë„ë¥¼ ì„ íƒí•˜ì„¸ìš”");
 	printString(10, 11, "+-------------------------+");
-	printString(10, 12, "| 0. EASY                 |");
+	printString(10, 12, "| EASY                  < |");
 	printString(10, 13, "+-------------------------+");
 	printString(10, 15, "+-------------------------+");
-	printString(10, 16, "| 1. NORMAL               |");
+	printString(10, 16, "| NORMAL                  |");
 	printString(10, 17, "+-------------------------+");
 	printString(10, 19, "+-------------------------+");
-	printString(10, 20, "| 2. HARD                 |");
+	printString(10, 20, "| HARD                    |");
 	printString(10, 21, "+-------------------------+");
 	printString(10, 23, "+-------------------------+");
-	printString(10, 24, "| 3. Á¾·á                 |");
+	printString(10, 24, "| ë„ì›€ë§                  |");
 	printString(10, 25, "+-------------------------+");
+	printString(10, 27, "+-------------------------+");
+	printString(10, 28, "| ì¢…ë£Œ                    |");
+	printString(10, 29, "+-------------------------+");
 	while (1) {
-		ch = _getch();
-		if (ch >= '0' && ch <= '2') {
-			difficulty = ch - '0';
-			return 0;
-		} else if (ch == '3') return 1;
+		key = _getch();
+		if (key == 224) {
+			printString(22, 12 + 4 * diff, " ");
+			key = _getch();
+			if (key == 72) {
+				if (--diff < 0) diff = 4;
+			} else if (key == 80) {
+				if (++diff > 4) diff = 0;
+			}
+			printString(22, 12 + 4 * diff, "<");
+		} else if (key == 13) {
+			switch (diff) {
+			case 0:
+			case 1:
+			case 2:
+				difficulty = diff;
+				return 0;
+			case 3:
+				return 2;
+			case 4:
+				return 1;
+			}
+
+		}
 	}
 }
 
@@ -67,16 +90,16 @@ void initGame() {
 	bombAmount = difficultyCons[difficulty].bombAmount;
 	moveCount = difficultyCons[difficulty].moveCount;
 
-	// Ä³¸¯ÅÍÀÇ x, y°ª -> ¸Ê Á¤Áß¾Ó
+	// ìºë¦­í„°ì˜ x, yê°’ -> ë§µ ì •ì¤‘ì•™
 	charX = mapSize / 2;
 	charY = mapSize / 2;
 
-	// difficulty¿¡ ¸Â°Ô map ¹è¿­ mapSize * mapSize Å©±â·Î µ¿Àû ÇÒ´ç
+	// difficultyì— ë§ê²Œ map ë°°ì—´ mapSize * mapSize í¬ê¸°ë¡œ ë™ì  í• ë‹¹
 	map = (Object**)malloc(sizeof(Object*) * mapSize);
 	for (int i = 0; i < mapSize; i++) {
 		map[i] = (Object*)malloc(sizeof(Object) * mapSize);
 	}
-	// map ¹è¿­ ÃÊ±âÈ­
+	// map ë°°ì—´ ì´ˆê¸°í™”
 	for (int x = 0; x < mapSize; x++) {
 		for (int y = 0; y < mapSize; y++) {
 			if (x == 0 || x == mapSize - 1 || y == 0 || y == mapSize - 1) {
@@ -87,13 +110,13 @@ void initGame() {
 		}
 	}
 
-	// º¸¹° »ı¼º
+	// ë³´ë¬¼ ìƒì„±
 	int x = rand() % (mapSize - 2) + 1;
 	int y = rand() % (mapSize - 2) + 1;
 	map[x][y].category = 'T';
 	map[x][y].isActive = 1;
 
-	// ÆøÅº »ı¼º
+	// í­íƒ„ ìƒì„±
 	for (int i = 0; i < bombAmount; i++) {
 		int x = rand() % (mapSize - 2) + 1;
 		int y = rand() % (mapSize - 2) + 1;
@@ -101,7 +124,7 @@ void initGame() {
 		map[x][y].isActive = 1;
 	}
 
-	// ½Ã¾ß Áõ°¡
+	// ì‹œì•¼ ì¦ê°€
 	for (int i = 0; i < 10; i++) {
 		int x = rand() % (mapSize - 2) + 1;
 		int y = rand() % (mapSize - 2) + 1;
@@ -109,7 +132,7 @@ void initGame() {
 		map[x][y].isActive = 1;
 	}
 
-	// ½Ã¾ß °¨¼Ò
+	// ì‹œì•¼ ê°ì†Œ
 	for (int i = 0; i < 10; i++) {
 		int x = rand() % (mapSize - 2) + 1;
 		int y = rand() % (mapSize - 2) + 1;
@@ -117,7 +140,7 @@ void initGame() {
 		map[x][y].isActive = 1;
 	}
 
-	// ÀÌµ¿ È½¼ö Áõ°¡
+	// ì´ë™ íšŸìˆ˜ ì¦ê°€
 	for (int i = 0; i < 10; i++) {
 		int x = rand() % (mapSize - 2) + 1;
 		int y = rand() % (mapSize - 2) + 1;
@@ -125,7 +148,7 @@ void initGame() {
 		map[x][y].isActive = 1;
 	}
 
-	// ÀÌµ¿ È½¼ö Áõ°¡
+	// ì´ë™ íšŸìˆ˜ ì¦ê°€
 	for (int i = 0; i < 10; i++) {
 		int x = rand() % (mapSize - 2) + 1;
 		int y = rand() % (mapSize - 2) + 1;
@@ -149,11 +172,11 @@ int playGame() {
 		else if (ch == 's') dy++;
 		else if (ch == 'd') dx++;
 
-		// ¸Ê ¹ÛÀ¸·Î ¹ş¾î³ªÁö ¸øÇÏ°Ô
+		// ë§µ ë°–ìœ¼ë¡œ ë²—ì–´ë‚˜ì§€ ëª»í•˜ê²Œ
 		if (charX + dx <= 0 || charX + dx >= mapSize - 1 || charY + dy <= 0 || charY + dy >= mapSize - 1)
 			continue;
 
-		// Ãæµ¹ Ã¼Å©
+		// ì¶©ëŒ ì²´í¬
 		int c = collisionCheck(map, dx, dy);
 		if (c) return c;
 
@@ -164,34 +187,34 @@ int playGame() {
 int collisionCheck(Object** map, int dx, int dy) {
 	switch (map[charX + dx][charY + dy].category) {
 	case 'T':
-		printQuote("¾Ë¸²", "º¸¹°À» Ã£¾Ò½À´Ï´Ù.");
+		printQuote("ì•Œë¦¼", "ë³´ë¬¼ì„ ì°¾ì•˜ìŠµë‹ˆë‹¤.");
 		return 2;
 
 	case 'B':
-		printQuote("¾Ë¸²", "ÆøÅºÀ» ¹â¾Ò½À´Ï´Ù.");
+		printQuote("ì•Œë¦¼", "í­íƒ„ì„ ë°Ÿì•˜ìŠµë‹ˆë‹¤.");
 		return 1;
 
 	case 'S':
-		printQuote("¾Ë¸²", "½Ã¾ß°¡ Áõ°¡µÇ¾ú½À´Ï´Ù.");
+		printQuote("ì•Œë¦¼", "ì‹œì•¼ê°€ ì¦ê°€ë˜ì—ˆìŠµë‹ˆë‹¤.");
 		sightSize += 10;
 		map[charX + dx][charY + dy].category = '.';
 		break;
 
 	case 's':
-		printQuote("¾Ë¸²", "½Ã¾ß°¡ °¨¼ÒµÇ¾ú½À´Ï´Ù.");
+		printQuote("ì•Œë¦¼", "ì‹œì•¼ê°€ ê°ì†Œë˜ì—ˆìŠµë‹ˆë‹¤.");
 		clearSight();
 		map[charX + dx][charY + dy].category = '.';
 		sightSize -= 10;
 		break;
 
 	case 'M':
-		printQuote("¾Ë¸²", "ÀÌµ¿ È½¼ö°¡ Áõ°¡µÇ¾ú½À´Ï´Ù.");
+		printQuote("ì•Œë¦¼", "ì´ë™ íšŸìˆ˜ê°€ ì¦ê°€ë˜ì—ˆìŠµë‹ˆë‹¤.");
 		map[charX + dx][charY + dy].category = '.';
 		moveCount += 15;
 		break;
 
 	case 'm':
-		printQuote("¾Ë¸²", "ÀÌµ¿ È½¼ö°¡ °¨¼ÒµÇ¾ú½À´Ï´Ù.");
+		printQuote("ì•Œë¦¼", "ì´ë™ íšŸìˆ˜ê°€ ê°ì†Œë˜ì—ˆìŠµë‹ˆë‹¤.");
 		map[charX + dx][charY + dy].category = '.';
 		moveCount -= 15;
 		break;
@@ -201,7 +224,7 @@ int collisionCheck(Object** map, int dx, int dy) {
 	charX += dx;
 	charY += dy;
 	score++;
-	// ÀÌµ¿È½¼ö °¨¼Ò ¹× ¾øÀ¸¸é °ÔÀÓ ¿À¹ö
+	// ì´ë™íšŸìˆ˜ ê°ì†Œ ë° ì—†ìœ¼ë©´ ê²Œì„ ì˜¤ë²„
 	if (--moveCount < 0) return 1;
 
 	return 0;
@@ -210,29 +233,29 @@ int collisionCheck(Object** map, int dx, int dy) {
 void printSight() {
 
 	gotoxy(0, 0);
-	printf("³²Àº ÀÌµ¿ È½¼ö: %d  ", moveCount);
-	// startX, startY = ¸Ê ÇÁ¸°Æ® ½ÃÀÛ À§Ä¡
+	printf("ë‚¨ì€ ì´ë™ íšŸìˆ˜: %d  ", moveCount);
+	// startX, startY = ë§µ í”„ë¦°íŠ¸ ì‹œì‘ ìœ„ì¹˜
 	int startX = (consoleX / 2 - sightSize) / 2, startY = (consoleY - sightSize) / 2;
 	gotoxy(startX - 1, startY - 1);
 	for (int y = charY - sightSize / 2 - 1, i = 0; y <= charY + sightSize / 2 + 1; y++, i++) {
 		for (int x = charX - sightSize / 2 - 1; x <= charX + sightSize / 2 + 1; x++) {
-			// ½Ã¾ß Å×µÎ¸® Ç¥½Ã
+			// ì‹œì•¼ í…Œë‘ë¦¬ í‘œì‹œ
 			if (x == charX - sightSize / 2 - 1 || x == charX + sightSize / 2 + 1 || y == charY - sightSize / 2 - 1 || y == charY + sightSize / 2 + 1)
 				printf("* ");
-			// ¸Ê ¹Û Ç¥½Ã
+			// ë§µ ë°– í‘œì‹œ
 			else if (x < 0 || x > mapSize - 1 || y < 0 || y > mapSize - 1)
 				printf("  ");
-			// ÇÃ·¹ÀÌ¾î Ç¥½Ã
+			// í”Œë ˆì´ì–´ í‘œì‹œ
 			else if (x == charX && y == charY) printf("P ");
-			// ¸Ê ¾È ¿ÀºêÁ§Æ® Ç¥½Ã
+			// ë§µ ì•ˆ ì˜¤ë¸Œì íŠ¸ í‘œì‹œ
 			else printf("%c ", categoryToChar(map[x][y].category));
 		}
 		gotoxy(startX - 1, startY + i);
 	}
 	gotoxy(startX - 1, startY + sightSize + 1);
-	printf("ÁÂÇ¥: (%d,%d)", charX, charY);
+	printf("ì¢Œí‘œ: (%d,%d)", charX, charY);
 	gotoxy(startX - 1, startY + sightSize + 2);
-	printf("Á¡¼ö: %d", score);
+	printf("ì ìˆ˜: %d", score);
 	// DEBUG
 	// gotoxy(0, 0);
 	// printf("x: %d; y: %d        ", charX, charY);
@@ -251,7 +274,7 @@ void clearSight() {
 
 void gameOver() {
 
-	// µ¿ÀûÇÒ´ç ÇØÁ¦
+	// ë™ì í• ë‹¹ í•´ì œ
 	for (int i = 0; i < mapSize; i++) {
 		free(map[i]);
 	}
@@ -268,9 +291,9 @@ void gameOver() {
 	score = 0;
 	system("cls");
 	gotoxy(10, 10);
-	printf("=== ·© Å· ===\n");
+	printf("=== ë­ í‚¹ ===\n");
 	for (int i = 0; i < rankSize; i++) {
-		printf("                    %s: %dÁ¡\n", rank[i].name, rank[i].score);
+		printf("                    %s: %dì \n", rank[i].name, rank[i].score);
 	}
 	_getch();
 }
