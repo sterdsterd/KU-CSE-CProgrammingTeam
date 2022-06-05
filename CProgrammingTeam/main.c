@@ -8,7 +8,14 @@
 Object** map = NULL;
 Score rank[10];
 int difficulty;
-const Difficulty difficultyCons[3] = {{51, 11, 20, 50}, {101, 21, 30, 100}, {151, 31, 50, 150}};
+const Difficulty difficultyCons[3] = {
+	// EASY
+	{.mapSize = 51, .sightSize = 11, .bombAmount = 20, .moveCount = 50},
+	// NORMAL
+	{.mapSize = 101, .sightSize = 21, .bombAmount = 30, .moveCount = 100},
+	//HARD
+	{.mapSize = 151, .sightSize = 31, .bombAmount = 50, .moveCount = 150}
+};
 int charX, charY, mapSize, sightSize, bombAmount, moveCount;
 int consoleX = 100, consoleY = 50;
 int score = 0, rankSize = 0;
@@ -284,10 +291,19 @@ void gameOver() {
 	printString(10, 10, "GAME OVER");
 	gotoxy(10, 12);
 	printf("SCORE: %d", score);
-	printString(10, 14, "NAME : ");
-	scanf("%s", &rank[rankSize].name);
-	rank[rankSize].score = score;
-	rankSize++;
+
+	if (rankSize == 10 && rank[9].score < score) {
+		printString(10, 14, "NAME : ");
+		scanf("%s", &rank[9].name);
+		rank[9].score = score;
+	} else if (rankSize < 10) {
+		printString(10, 14, "NAME : ");
+		scanf("%s", &rank[rankSize].name);
+		rank[rankSize].score = score;
+		rankSize++;
+	}
+
+	sort(rank, rankSize);
 	score = 0;
 	system("cls");
 	gotoxy(10, 10);
