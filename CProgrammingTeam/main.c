@@ -47,7 +47,7 @@ int initLobby() {
 	int diff = 0;
 	system("cls");
 	gotoxy(10, 9);
-	printSequence("난이도를 선택하세요");
+	printSequence("난이도를  선택하세요");
 	printString(10, 11, "+-------------------------+");
 	printString(10, 12, "| EASY                  < |");
 	printString(10, 13, "+-------------------------+");
@@ -118,12 +118,6 @@ void initGame() {
 		}
 	}
 
-	// 보물 생성
-	int x = rand() % (mapSize - 2) + 1;
-	int y = rand() % (mapSize - 2) + 1;
-	map[x][y].category = 'T';
-	map[x][y].isActive = 1;
-
 	// 폭탄 생성
 	for (int i = 0; i < bombAmount; i++) {
 		int x = rand() % (mapSize - 2) + 1;
@@ -163,6 +157,12 @@ void initGame() {
 		map[x][y].category = 'm';
 		map[x][y].isActive = 1;
 	}
+
+	// 보물 생성
+	int x = rand() % (mapSize - 2) + 1;
+	int y = rand() % (mapSize - 2) + 1;
+	map[x][y].category = 'T';
+	map[x][y].isActive = 1;
 
 }
 

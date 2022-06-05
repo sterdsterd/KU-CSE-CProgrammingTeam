@@ -47,6 +47,6 @@ void printQuote(char* name, char* line) {
 void printSequence(char* str) {
 	for (int i = 0; i < strlen(str); i++) {
 		printf("%c", str[i]);
-		Sleep(100);
+		Sleep(50);
 	}
 }
