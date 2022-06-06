@@ -10,11 +10,11 @@ Score rank[10];
 int difficulty;
 const Difficulty difficultyCons[3] = {
 	// EASY
-	{.mapSize = 51, .sightSize = 11, .bombAmount = 20, .moveCount = 50, .minSight = 7, .maxSight = 23},
+	{.mapSize = 41, .sightSize = 11, .bombAmount = 20, .moveCount = 100, .minSight = 7, .maxSight = 19},
 	// NORMAL
-	{.mapSize = 101, .sightSize = 21, .bombAmount = 30, .moveCount = 100, .minSight = 11, .maxSight = 33},
+	{.mapSize = 71, .sightSize = 21, .bombAmount = 30, .moveCount = 150, .minSight = 13, .maxSight = 29},
 	//HARD
-	{.mapSize = 151, .sightSize = 31, .bombAmount = 50, .moveCount = 150, .minSight = 21, .maxSight = 43}
+	{.mapSize = 101, .sightSize = 31, .bombAmount = 50, .moveCount = 200, .minSight = 23, .maxSight = 39}
 };
 int charX, charY, mapSize, sightSize, bombAmount, moveCount;
 int consoleX = 100, consoleY = 50;
@@ -173,10 +173,10 @@ void initGame() {
 
 	generateMaze();
 
-	generateItem(10, 'S');
-	generateItem(10, 's');
-	generateItem(10, 'M');
-	generateItem(10, 'm');
+	generateItem(20, 'S');
+	generateItem(20, 's');
+	generateItem(20, 'M');
+	generateItem(20, 'm');
 	generateItem(1, 'T');
 
 }
@@ -278,9 +278,11 @@ void printSight() {
 			else if (x < 0 || x > mapSize - 1 || y < 0 || y > mapSize - 1)
 				printf("  ");
 			// 플레이어 표시
-			else if (x == charX && y == charY) printf("P ");
+			else if (x == charX && y == charY) {
+				printf("◆");
+			}
 			// 맵 안 오브젝트 표시
-			else printf("%c ", categoryToChar(map[x][y].category));
+			else categoryToChar(map[x][y].category);
 		}
 		gotoxy(startX - 1, startY + i);
 	}

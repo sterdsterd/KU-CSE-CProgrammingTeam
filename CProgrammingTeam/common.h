@@ -32,10 +32,19 @@ void clearSight();
 int playGame();
 void gameOver();
 int collisionCheck(Object** map, int dx, int dy);
-char categoryToChar(char c) {
-	if (c == 'B') return '!';
-	else if (c == '.') return ' ';
-	else if (c == 'W') return '#';
+void categoryToChar(char c) {
+	if (c == 'B') printf("! ");
+	else if (c == '.') printf("  ");
+	else if (c == 'W') {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+		printf("бс");
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+	}
+	else {
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+		printf("б┌");
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+	}
 }
 
 void sort(Score* arr, int size) {
