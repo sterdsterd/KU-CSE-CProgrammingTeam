@@ -18,7 +18,6 @@ typedef struct Score {
 typedef struct Difficulty {
 	int mapSize;
 	int sightSize;
-	int bombAmount;
 	int moveCount;
 	int maxSight;
 	int minSight;

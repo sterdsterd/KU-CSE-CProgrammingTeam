@@ -10,13 +10,13 @@ Score rank[10];
 int difficulty;
 const Difficulty difficultyCons[3] = {
 	// EASY
-	{.mapSize = 41, .sightSize = 11, .bombAmount = 20, .moveCount = 100, .minSight = 7, .maxSight = 19},
+	{.mapSize = 41, .sightSize = 11, .moveCount = 100, .minSight = 7, .maxSight = 19},
 	// NORMAL
-	{.mapSize = 71, .sightSize = 21, .bombAmount = 30, .moveCount = 150, .minSight = 13, .maxSight = 29},
+	{.mapSize = 71, .sightSize = 21, .moveCount = 150, .minSight = 13, .maxSight = 29},
 	//HARD
-	{.mapSize = 101, .sightSize = 31, .bombAmount = 50, .moveCount = 200, .minSight = 23, .maxSight = 39}
+	{.mapSize = 101, .sightSize = 31, .moveCount = 200, .minSight = 23, .maxSight = 39}
 };
-int charX, charY, mapSize, sightSize, bombAmount, moveCount;
+int charX, charY, mapSize, sightSize, moveCount;
 int consoleX = 100, consoleY = 50;
 int score = 0, rankSize = 0;
 
@@ -53,34 +53,54 @@ int initLobby() {
 	int key;
 	int diff = 0;
 	system("cls");
-	gotoxy(10, 9);
-	printSequence("난이도를  선택하세요");
-	printString(10, 11, "+-------------------------+");
-	printString(10, 12, "| EASY                  < |");
-	printString(10, 13, "+-------------------------+");
-	printString(10, 15, "+-------------------------+");
-	printString(10, 16, "| NORMAL                  |");
-	printString(10, 17, "+-------------------------+");
-	printString(10, 19, "+-------------------------+");
-	printString(10, 20, "| HARD                    |");
-	printString(10, 21, "+-------------------------+");
-	printString(10, 23, "+-------------------------+");
-	printString(10, 24, "| 도움말                  |");
-	printString(10, 25, "+-------------------------+");
-	printString(10, 27, "+-------------------------+");
-	printString(10, 28, "| 종료                    |");
-	printString(10, 29, "+-------------------------+");
+	gotoxy(20, 9);
+	printSequence("난이도를 선택하세요");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+	printString(18, 11, "+-------------------------+");
+	printString(17, 12, "▶ |                         | ◀");
+	printString(18, 13, "+-------------------------+");
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	printString(19, 12, "EASY");
+	Sleep(100);
+	printString(18, 15, "+-------------------------+");
+	printString(18, 16, "| NORMAL                  |");
+	printString(18, 17, "+-------------------------+");
+	Sleep(100);
+	printString(18, 19, "+-------------------------+");
+	printString(18, 20, "| HARD                    |");
+	printString(18, 21, "+-------------------------+");
+	Sleep(100);
+	printString(18, 23, "+-------------------------+");
+	printString(18, 24, "| 도움말                  |");
+	printString(18, 25, "+-------------------------+");
+	Sleep(100);
+	printString(18, 27, "+-------------------------+");
+	printString(18, 28, "| 종료                    |");
+	printString(18, 29, "+-------------------------+");
 	while (1) {
 		key = _getch();
 		if (key == 224) {
-			printString(22, 12 + 4 * diff, " ");
+			printString(17, 12 + 4 * diff, " ");
+			printString(32, 12 + 4 * diff, " ");
+			printString(18, 11 + 4 * diff, "+-------------------------+");
+			printString(18, 12 + 4 * diff, "|");
+			printString(31, 12 + 4 * diff, "|");
+			printString(18, 13 + 4 * diff, "+-------------------------+");
 			key = _getch();
 			if (key == 72) {
 				if (--diff < 0) diff = 4;
 			} else if (key == 80) {
 				if (++diff > 4) diff = 0;
 			}
-			printString(22, 12 + 4 * diff, "<");
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+			printString(17, 12 + 4 * diff, "▶");
+			printString(32, 12 + 4 * diff, "◀");
+			printString(18, 11 + 4 * diff, "+-------------------------+");
+			printString(18, 12 + 4 * diff, "|");
+			printString(31, 12 + 4 * diff, "|");
+			printString(18, 13 + 4 * diff, "+-------------------------+");
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
 		} else if (key == 13) {
 			switch (diff) {
 			case 0:
@@ -158,7 +178,6 @@ void initGame() {
 
 	mapSize = difficultyCons[difficulty].mapSize;
 	sightSize = difficultyCons[difficulty].sightSize;
-	bombAmount = difficultyCons[difficulty].bombAmount;
 	moveCount = difficultyCons[difficulty].moveCount;
 
 	// 캐릭터의 x, y값 -> 맵 정중앙
