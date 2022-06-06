@@ -24,6 +24,7 @@ typedef struct Difficulty {
 	int minSight;
 } Difficulty;
 
+void initStory();
 int initLobby();
 void initGame();
 void printSight();

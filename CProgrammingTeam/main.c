@@ -23,6 +23,7 @@ int score = 0, rankSize = 0;
 int main() {
 	hideConsoleCursor();
 	setConsoleSize(consoleX, consoleY);
+	initStory();
 	if (initLobby()) return 0;
 	for (;;) {
 		initGame();
@@ -40,6 +41,12 @@ int main() {
 	}
 
 	return 0;
+}
+
+void initStory() {
+	char str[] = "2075년, 인간의 무분별한 자원 사용으로 지구의 자원은 점점 고갈되기 시작한다.\n자원의 부족으로 사람들은 점차 죽어나가고\n몇몇 나라에서는 몇 안되는 자원을 약탈하기 위해 전쟁을 일삼게 된다.\n점점 심각해지는 상황 속에서 미 항공 우주국 NASA에서는\n화성 탐사 로봇인 “Perseverance”가 화성 내부에서 정체불명의 원석을 발견했음을 알게된다.\n이는 지구의 석탄, 석유보다 몇 배 이상의 효용성을 가지는 자원으로 판명되었고\nNASA에서는 즉각 이 자원을 대량으로 얻어오기 위해 화성탐사팀을 꾸리게 되는데...";
+	printSequence(str);
+	_getch();
 }
 
 int initLobby() {
