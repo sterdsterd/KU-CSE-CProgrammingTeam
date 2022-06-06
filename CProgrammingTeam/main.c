@@ -10,11 +10,11 @@ Score rank[10];
 int difficulty;
 const Difficulty difficultyCons[3] = {
 	// EASY
-	{.mapSize = 51, .sightSize = 11, .bombAmount = 20, .moveCount = 50, .minSight = 7, .maxSight = 23},
+	{.mapSize = 41, .sightSize = 11, .bombAmount = 20, .moveCount = 100, .minSight = 7, .maxSight = 19},
 	// NORMAL
-	{.mapSize = 101, .sightSize = 21, .bombAmount = 30, .moveCount = 100, .minSight = 11, .maxSight = 33},
+	{.mapSize = 71, .sightSize = 21, .bombAmount = 30, .moveCount = 150, .minSight = 13, .maxSight = 29},
 	//HARD
-	{.mapSize = 151, .sightSize = 31, .bombAmount = 50, .moveCount = 150, .minSight = 21, .maxSight = 43}
+	{.mapSize = 101, .sightSize = 31, .bombAmount = 50, .moveCount = 200, .minSight = 23, .maxSight = 39}
 };
 int charX, charY, mapSize, sightSize, bombAmount, moveCount;
 int consoleX = 100, consoleY = 50;
@@ -23,7 +23,7 @@ int score = 0, rankSize = 0;
 int main() {
 	hideConsoleCursor();
 	setConsoleSize(consoleX, consoleY);
-	initStory();
+	//initStory();
 	if (initLobby()) return 0;
 	for (;;) {
 		initGame();
@@ -98,6 +98,62 @@ int initLobby() {
 	}
 }
 
+void generateMaze() {
+	// 길을 다 막아버리는 작업
+	for (int y = 0; y < mapSize; y++) {
+		for (int x = 0; x < mapSize; x++) {
+			if (x % 2 == 0 || y % 2 == 0)
+				map[x][y].category = 'W';
+			else
+				map[x][y].category = '.';
+		}
+	}
+
+	// 길을 반반 확률로 뚫는 작업
+	for (int y = 0; y < mapSize; y++) {
+		int count = 1;  // 연속해서 몇 개의 오른쪽 벽을 길로 뚫었는지
+		for (int x = 0; x < mapSize; x++) {
+			if (x % 2 == 0 || y % 2 == 0)
+				continue;
+
+			if (x == mapSize - 2 && y == mapSize - 2)
+				continue;
+
+			if (y == mapSize - 2) {
+				map[x + 1][y].category = '.';
+				continue;
+			}
+
+			if (x == mapSize - 2) {
+				map[x][y + 1].category = '.';
+				continue;
+			}
+
+			if (rand() % 2 == 0) {
+				map[x + 1][y].category = '.';
+				count++;
+			} else {
+				int randomIndex = rand() % count;
+				map[x - randomIndex * 2][y + 1].category = '.';  // 아래 뚫기
+				count = 1;
+			}
+		}
+	}
+}
+
+void generateItem(int amount, char category) {
+	for (int i = 0; i < amount; i++) {
+		int x = rand() % (mapSize - 2) + 1;
+		int y = rand() % (mapSize - 2) + 1;
+		if (map[x][y].category != '.') {
+			i--;
+			continue;
+		}
+		map[x][y].category = category;
+		map[x][y].isActive = 1;
+	}
+}
+
 void initGame() {
 
 	mapSize = difficultyCons[difficulty].mapSize;
@@ -114,62 +170,14 @@ void initGame() {
 	for (int i = 0; i < mapSize; i++) {
 		map[i] = (Object*)malloc(sizeof(Object) * mapSize);
 	}
-	// map 배열 초기화
-	for (int x = 0; x < mapSize; x++) {
-		for (int y = 0; y < mapSize; y++) {
-			if (x == 0 || x == mapSize - 1 || y == 0 || y == mapSize - 1) {
-				map[x][y].category = 'W';
-			} else {
-				map[x][y].category = '.';
-			}
-		}
-	}
 
-	// 폭탄 생성
-	for (int i = 0; i < bombAmount; i++) {
-		int x = rand() % (mapSize - 2) + 1;
-		int y = rand() % (mapSize - 2) + 1;
-		map[x][y].category = 'B';
-		map[x][y].isActive = 1;
-	}
+	generateMaze();
 
-	// 시야 증가
-	for (int i = 0; i < 10; i++) {
-		int x = rand() % (mapSize - 2) + 1;
-		int y = rand() % (mapSize - 2) + 1;
-		map[x][y].category = 'S';
-		map[x][y].isActive = 1;
-	}
-
-	// 시야 감소
-	for (int i = 0; i < 10; i++) {
-		int x = rand() % (mapSize - 2) + 1;
-		int y = rand() % (mapSize - 2) + 1;
-		map[x][y].category = 's';
-		map[x][y].isActive = 1;
-	}
-
-	// 이동 횟수 증가
-	for (int i = 0; i < 10; i++) {
-		int x = rand() % (mapSize - 2) + 1;
-		int y = rand() % (mapSize - 2) + 1;
-		map[x][y].category = 'M';
-		map[x][y].isActive = 1;
-	}
-
-	// 이동 횟수 증가
-	for (int i = 0; i < 10; i++) {
-		int x = rand() % (mapSize - 2) + 1;
-		int y = rand() % (mapSize - 2) + 1;
-		map[x][y].category = 'm';
-		map[x][y].isActive = 1;
-	}
-
-	// 보물 생성
-	int x = rand() % (mapSize - 2) + 1;
-	int y = rand() % (mapSize - 2) + 1;
-	map[x][y].category = 'T';
-	map[x][y].isActive = 1;
+	generateItem(20, 'S');
+	generateItem(20, 's');
+	generateItem(20, 'M');
+	generateItem(20, 'm');
+	generateItem(1, 'T');
 
 }
 
@@ -188,13 +196,10 @@ int playGame() {
 		else if (ch == 'd') dx++;
 		else continue;
 
-		// 맵 밖으로 벗어나지 못하게
-		if (charX + dx <= 0 || charX + dx >= mapSize - 1 || charY + dy <= 0 || charY + dy >= mapSize - 1)
-			continue;
-
 		// 충돌 체크
 		int c = collisionCheck(map, dx, dy);
-		if (c) return c;
+		if (c == -1) continue;
+		else if (c) return c;
 
 		printSight();
 	}
@@ -202,6 +207,9 @@ int playGame() {
 
 int collisionCheck(Object** map, int dx, int dy) {
 	switch (map[charX + dx][charY + dy].category) {
+	case 'W':
+		return -1;
+
 	case 'T':
 		printQuote("알림", "보물을 찾았습니다.");
 		return 2;
@@ -270,9 +278,11 @@ void printSight() {
 			else if (x < 0 || x > mapSize - 1 || y < 0 || y > mapSize - 1)
 				printf("  ");
 			// 플레이어 표시
-			else if (x == charX && y == charY) printf("P ");
+			else if (x == charX && y == charY) {
+				printf("◆");
+			}
 			// 맵 안 오브젝트 표시
-			else printf("%c ", categoryToChar(map[x][y].category));
+			else categoryToChar(map[x][y].category);
 		}
 		gotoxy(startX - 1, startY + i);
 	}
