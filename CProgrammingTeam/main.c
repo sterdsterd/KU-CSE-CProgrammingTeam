@@ -18,6 +18,7 @@ const Difficulty difficultyCons[3] = {
 int charX, charY, mapSize, sightSize, moveCount;
 int consoleX = 100, consoleY = 50;
 int score = 0, rankSize = 0;
+int treasureX, treasureY;
 
 int main() {
 	hideConsoleCursor();
@@ -37,7 +38,7 @@ int main() {
 			}
 			free(map);
 		} else {
-			clear();
+			//gameClear();
 		}
 	}
 
@@ -45,8 +46,37 @@ int main() {
 }
 
 void initStory() {
-	char str[] = "2075년, 인간의 무분별한 자원 사용으로 지구의 자원은 점점 고갈되기 시작한다.\n자원의 부족으로 사람들은 점차 죽어나가고\n몇몇 나라에서는 몇 안되는 자원을 약탈하기 위해 전쟁을 일삼게 된다.\n점점 심각해지는 상황 속에서 미 항공 우주국 NASA에서는\n화성 탐사 로봇인 “Perseverance”가 화성 내부에서 정체불명의 원석을 발견했음을 알게된다.\n이는 지구의 석탄, 석유보다 몇 배 이상의 효용성을 가지는 자원으로 판명되었고\nNASA에서는 즉각 이 자원을 대량으로 얻어오기 위해 화성탐사팀을 꾸리게 되는데...";
-	printSequence(str);
+	gotoxy((100 - strlen("스킵하려면 SPACE를 누르세요")) / 4, 1);
+	printf("스킵하려면 SPACE를 누르세요");
+
+	char* str[] = { "2075년, 인간의 무분별한 자원 사용으로 지구의 자원은 점점 고갈되기 시작한다.",
+		"자원의 부족으로 사람들은 점차 죽어나가고",
+		"몇몇 나라에서는 몇 안되는 자원을 약탈하기 위해 전쟁을 일삼게 된다.",
+		"점점 심각해지는 상황 속에서 미 항공 우주국 NASA에서는",
+		"화성 탐사 로봇인 “Perseverance”가 화성 내부에서 정체불명의 원석을 발견했음을 알게된다.",
+		"이는 지구의 석탄, 석유보다 몇 배 이상의 효용성을 가지는 자원으로 판명되었고",
+		"NASA에서는 즉각 이 자원을 대량으로 얻어오기 위해 화성탐사팀을 꾸리게 되는데..." };
+
+	for (int j = 0; j < 7; j++) {
+		gotoxy((100 - strlen(str[j])) / 4, 5 + j * 2);
+		int i;
+		for (i = 0; i < strlen(str[j]); i++) {
+			if (_kbhit() && _getch() == ' ') {
+				break;
+			}
+			printf("%c", str[j][i]);
+			Sleep(50);
+		}
+		char* substr = (char*)malloc(sizeof(char) * (strlen(str[j]) - i + 2));
+		strncpy(substr, str[j] + i, strlen(str[j]) - i + 1);
+		substr[strlen(str[j]) - i + 1] = 0;
+		printf("%s", substr);
+		printf("\n");
+	}
+
+	char con[] = "계속하려면 아무 키나 누르세요";
+	gotoxy((100 - strlen(con)) / 4, 5 + 8 * 2);
+	printf("%s", con);
 	_getch();
 }
 
@@ -172,6 +202,10 @@ void generateItem(int amount, char category) {
 		}
 		map[x][y].category = category;
 		map[x][y].isActive = 1;
+		if (map[x][y].category == CATEGORY.TREASURE) {
+			treasureX = x;
+			treasureY = y;
+		}
 	}
 }
 
@@ -197,6 +231,7 @@ void initGame() {
 	generateItem(20, CATEGORY.DECREASE_MOVE);
 	generateItem(20, CATEGORY.INCREASE_SIGHT);
 	generateItem(20, CATEGORY.DECREASE_SIGHT);
+	generateItem(20, CATEGORY.HINT);
 	generateItem(1, CATEGORY.TREASURE);
 
 }
@@ -260,6 +295,18 @@ int collisionCheck(Object** map, int dx, int dy) {
 		printQuote("알림", "이동 횟수가 감소되었습니다.");
 		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
 		moveCount -= 15;
+	} else if (category == CATEGORY.HINT) {
+		if (rand() % 2) {
+			printQuote("힌트", "");
+			gotoxy(1, 43);
+			printf("보물의 x좌표는 %d 입니다.", treasureX);
+			map[charX + dx][charY + dy].category = CATEGORY.BLANK;
+		} else {
+			printQuote("힌트", "");
+			gotoxy(1, 43);
+			printf("보물의 y좌표는 %d 입니다.", treasureY);
+			map[charX + dx][charY + dy].category = CATEGORY.BLANK;
+		}
 	}
 
 	charX += dx;

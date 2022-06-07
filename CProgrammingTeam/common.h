@@ -32,7 +32,8 @@ const struct {
 	char INCREASE_MOVE;
 	char DECREASE_MOVE;
 	char TREASURE;
-} CATEGORY = {'W', '.', 'S', 's', 'M', 'm', 'T'};
+	char HINT;
+} CATEGORY = { 'W', '.', 'S', 's', 'M', 'm', 'T', 'H' };
 
 void initStory();
 int initLobby();
@@ -43,8 +44,8 @@ int playGame();
 void gameOver();
 int collisionCheck(Object** map, int dx, int dy);
 void categoryToChar(char c) {
-	if (c == '.') printf("  ");
-	else if (c == 'W') {
+	if (c == CATEGORY.BLANK) printf("  ");
+	else if (c == CATEGORY.WALL) {
 		setTextColor(COLOR.DARK_GREY);
 		printf("бс");
 		setTextColor(COLOR.GREY);
