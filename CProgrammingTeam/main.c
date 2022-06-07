@@ -12,7 +12,7 @@ const Difficulty difficultyCons[3] = {
 	{.mapSize = 41, .sightSize = 11, .moveCount = 100, .minSight = 7, .maxSight = 19},
 	// NORMAL
 	{.mapSize = 71, .sightSize = 21, .moveCount = 150, .minSight = 13, .maxSight = 29},
-	//HARD
+	// HARD
 	{.mapSize = 101, .sightSize = 31, .moveCount = 200, .minSight = 23, .maxSight = 39}
 };
 int charX, charY, mapSize, sightSize, moveCount;
@@ -29,13 +29,15 @@ int main() {
 		if (playGame() == 1) {
 			gameOver();
 			if (initLobby()) break;
-		} else {
+		} else if (difficulty <= 2) {
 			difficulty++;
 			score += 200;
 			for (int i = 0; i < mapSize; i++) {
 				free(map[i]);
 			}
 			free(map);
+		} else {
+			clear();
 		}
 	}
 
@@ -308,6 +310,13 @@ void clearSight() {
 		}
 		gotoxy(startX - 1, startY + i);
 	}
+}
+
+void gameClear() {
+	system("cls");
+	gotoxy(0, 0);
+	printf("클리어");
+	_getch();
 }
 
 void gameOver() {
