@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include "console.h"
 
 typedef struct Coord {
 	int x;
@@ -23,6 +24,16 @@ typedef struct Difficulty {
 	int minSight;
 } Difficulty;
 
+const struct {
+	char WALL;
+	char BLANK;
+	char INCREASE_SIGHT;
+	char DECREASE_SIGHT;
+	char INCREASE_MOVE;
+	char DECREASE_MOVE;
+	char TREASURE;
+} CATEGORY = {'W', '.', 'S', 's', 'M', 'm', 'T'};
+
 void initStory();
 int initLobby();
 void initGame();
@@ -32,17 +43,16 @@ int playGame();
 void gameOver();
 int collisionCheck(Object** map, int dx, int dy);
 void categoryToChar(char c) {
-	if (c == 'B') printf("! ");
-	else if (c == '.') printf("  ");
+	if (c == '.') printf("  ");
 	else if (c == 'W') {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+		setTextColor(COLOR.DARK_GREY);
 		printf("бс");
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+		setTextColor(COLOR.GREY);
 	}
 	else {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+		setTextColor(COLOR.YELLOW);
 		printf("б┌");
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+		setTextColor(COLOR.GREY);
 	}
 }
 

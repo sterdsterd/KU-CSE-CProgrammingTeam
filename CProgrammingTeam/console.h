@@ -10,6 +10,14 @@ void setConsoleSize(int x, int y) {
 	SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &windowSize);
 }
 
+const struct {
+	char GREY, YELLOW, DARK_GREY;
+} COLOR = {7, 6, 8};
+
+void setTextColor(int code) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), code);
+}
+
 void hideConsoleCursor() {
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO info;
