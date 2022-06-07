@@ -3,27 +3,26 @@
 #include <conio.h>
 #include <stdlib.h>
 #include "common.h"
-#include "console.h"
 
 Object** map = NULL;
 Score rank[10];
 int difficulty;
 const Difficulty difficultyCons[3] = {
 	// EASY
-	{.mapSize = 41, .sightSize = 11, .bombAmount = 20, .moveCount = 100, .minSight = 7, .maxSight = 19},
+	{.mapSize = 41, .sightSize = 11, .moveCount = 100, .minSight = 7, .maxSight = 19},
 	// NORMAL
-	{.mapSize = 71, .sightSize = 21, .bombAmount = 30, .moveCount = 150, .minSight = 13, .maxSight = 29},
+	{.mapSize = 71, .sightSize = 21, .moveCount = 150, .minSight = 13, .maxSight = 29},
 	//HARD
-	{.mapSize = 101, .sightSize = 31, .bombAmount = 50, .moveCount = 200, .minSight = 23, .maxSight = 39}
+	{.mapSize = 101, .sightSize = 31, .moveCount = 200, .minSight = 23, .maxSight = 39}
 };
-int charX, charY, mapSize, sightSize, bombAmount, moveCount;
+int charX, charY, mapSize, sightSize, moveCount;
 int consoleX = 100, consoleY = 50;
 int score = 0, rankSize = 0;
 
 int main() {
 	hideConsoleCursor();
 	setConsoleSize(consoleX, consoleY);
-	//initStory();
+	initStory();
 	if (initLobby()) return 0;
 	for (;;) {
 		initGame();
@@ -53,34 +52,55 @@ int initLobby() {
 	int key;
 	int diff = 0;
 	system("cls");
-	gotoxy(10, 9);
-	printSequence("난이도를  선택하세요");
-	printString(10, 11, "+-------------------------+");
-	printString(10, 12, "| EASY                  < |");
-	printString(10, 13, "+-------------------------+");
-	printString(10, 15, "+-------------------------+");
-	printString(10, 16, "| NORMAL                  |");
-	printString(10, 17, "+-------------------------+");
-	printString(10, 19, "+-------------------------+");
-	printString(10, 20, "| HARD                    |");
-	printString(10, 21, "+-------------------------+");
-	printString(10, 23, "+-------------------------+");
-	printString(10, 24, "| 도움말                  |");
-	printString(10, 25, "+-------------------------+");
-	printString(10, 27, "+-------------------------+");
-	printString(10, 28, "| 종료                    |");
-	printString(10, 29, "+-------------------------+");
+	gotoxy(20, 9);
+	printSequence("난이도를 선택하세요");
+	setTextColor(COLOR.YELLOW);
+	printString(18, 11, "+-------------------------+");
+	printString(17, 12, "▶ |                         | ◀");
+	printString(18, 13, "+-------------------------+");
+	setTextColor(COLOR.GREY);
+	printString(19, 12, "EASY");
+	Sleep(100);
+	printString(18, 15, "+-------------------------+");
+	printString(18, 16, "| NORMAL                  |");
+	printString(18, 17, "+-------------------------+");
+	Sleep(100);
+	printString(18, 19, "+-------------------------+");
+	printString(18, 20, "| HARD                    |");
+	printString(18, 21, "+-------------------------+");
+	Sleep(100);
+	printString(18, 23, "+-------------------------+");
+	printString(18, 24, "| 도움말                  |");
+	printString(18, 25, "+-------------------------+");
+	Sleep(100);
+	printString(18, 27, "+-------------------------+");
+	printString(18, 28, "| 종료                    |");
+	printString(18, 29, "+-------------------------+");
+	printString(18, 31, "↑/↓, ENTER 키로 메뉴 선택");
 	while (1) {
 		key = _getch();
 		if (key == 224) {
-			printString(22, 12 + 4 * diff, " ");
+			printString(17, 12 + 4 * diff, " ");
+			printString(32, 12 + 4 * diff, " ");
+			printString(18, 11 + 4 * diff, "+-------------------------+");
+			printString(18, 12 + 4 * diff, "|");
+			printString(31, 12 + 4 * diff, "|");
+			printString(18, 13 + 4 * diff, "+-------------------------+");
 			key = _getch();
 			if (key == 72) {
 				if (--diff < 0) diff = 4;
 			} else if (key == 80) {
 				if (++diff > 4) diff = 0;
 			}
-			printString(22, 12 + 4 * diff, "<");
+			setTextColor(COLOR.YELLOW);
+			printString(17, 12 + 4 * diff, "▶");
+			printString(32, 12 + 4 * diff, "◀");
+			printString(18, 11 + 4 * diff, "+-------------------------+");
+			printString(18, 12 + 4 * diff, "|");
+			printString(31, 12 + 4 * diff, "|");
+			printString(18, 13 + 4 * diff, "+-------------------------+");
+			setTextColor(COLOR.GREY);
+
 		} else if (key == 13) {
 			switch (diff) {
 			case 0:
@@ -99,19 +119,18 @@ int initLobby() {
 }
 
 void generateMaze() {
-	// 길을 다 막아버리는 작업
+
 	for (int y = 0; y < mapSize; y++) {
 		for (int x = 0; x < mapSize; x++) {
 			if (x % 2 == 0 || y % 2 == 0)
-				map[x][y].category = 'W';
+				map[x][y].category = CATEGORY.WALL;
 			else
-				map[x][y].category = '.';
+				map[x][y].category = CATEGORY.BLANK;
 		}
 	}
 
-	// 길을 반반 확률로 뚫는 작업
 	for (int y = 0; y < mapSize; y++) {
-		int count = 1;  // 연속해서 몇 개의 오른쪽 벽을 길로 뚫었는지
+		int count = 1;
 		for (int x = 0; x < mapSize; x++) {
 			if (x % 2 == 0 || y % 2 == 0)
 				continue;
@@ -120,21 +139,21 @@ void generateMaze() {
 				continue;
 
 			if (y == mapSize - 2) {
-				map[x + 1][y].category = '.';
+				map[x + 1][y].category = CATEGORY.BLANK;
 				continue;
 			}
 
 			if (x == mapSize - 2) {
-				map[x][y + 1].category = '.';
+				map[x][y + 1].category = CATEGORY.BLANK;
 				continue;
 			}
 
 			if (rand() % 2 == 0) {
-				map[x + 1][y].category = '.';
+				map[x + 1][y].category = CATEGORY.BLANK;
 				count++;
 			} else {
 				int randomIndex = rand() % count;
-				map[x - randomIndex * 2][y + 1].category = '.';  // 아래 뚫기
+				map[x - randomIndex * 2][y + 1].category = CATEGORY.BLANK;
 				count = 1;
 			}
 		}
@@ -145,7 +164,7 @@ void generateItem(int amount, char category) {
 	for (int i = 0; i < amount; i++) {
 		int x = rand() % (mapSize - 2) + 1;
 		int y = rand() % (mapSize - 2) + 1;
-		if (map[x][y].category != '.') {
+		if (map[x][y].category != CATEGORY.BLANK) {
 			i--;
 			continue;
 		}
@@ -158,7 +177,6 @@ void initGame() {
 
 	mapSize = difficultyCons[difficulty].mapSize;
 	sightSize = difficultyCons[difficulty].sightSize;
-	bombAmount = difficultyCons[difficulty].bombAmount;
 	moveCount = difficultyCons[difficulty].moveCount;
 
 	// 캐릭터의 x, y값 -> 맵 정중앙
@@ -173,11 +191,11 @@ void initGame() {
 
 	generateMaze();
 
-	generateItem(20, 'S');
-	generateItem(20, 's');
-	generateItem(20, 'M');
-	generateItem(20, 'm');
-	generateItem(1, 'T');
+	generateItem(20, CATEGORY.INCREASE_MOVE);
+	generateItem(20, CATEGORY.DECREASE_MOVE);
+	generateItem(20, CATEGORY.INCREASE_SIGHT);
+	generateItem(20, CATEGORY.DECREASE_SIGHT);
+	generateItem(1, CATEGORY.TREASURE);
 
 }
 
@@ -206,51 +224,40 @@ int playGame() {
 }
 
 int collisionCheck(Object** map, int dx, int dy) {
-	switch (map[charX + dx][charY + dy].category) {
-	case 'W':
-		return -1;
+	char category = map[charX + dx][charY + dy].category;
 
-	case 'T':
+	if (category == CATEGORY.WALL) {
+		return -1;
+	} else if (category == CATEGORY.TREASURE) {
 		printQuote("알림", "보물을 찾았습니다.");
 		return 2;
-
-	case 'B':
-		printQuote("알림", "폭탄을 밟았습니다.");
-		return 1;
-
-	case 'S':
+	} else if (category == CATEGORY.INCREASE_SIGHT) {
 		if (sightSize + 4 <= difficultyCons[difficulty].maxSight) {
 			sightSize += 4;
 			printQuote("알림", "시야가 증가되었습니다.");
-		} else {
+		}
+		else {
 			printQuote("알림", "최대 시야");
 		}
-		map[charX + dx][charY + dy].category = '.';
-		break;
-
-	case 's':
+		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
+	} else if (category == CATEGORY.DECREASE_SIGHT) {
 		if (sightSize - 4 >= difficultyCons[difficulty].minSight) {
 			clearSight();
 			sightSize -= 4;
 			printQuote("알림", "시야가 감소되었습니다.");
-		} else {
+		}
+		else {
 			printQuote("알림", "최소 시야");
 		}
-		map[charX + dx][charY + dy].category = '.';
-		break;
-
-	case 'M':
+		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
+	} else if (category == CATEGORY.INCREASE_MOVE) {
 		printQuote("알림", "이동 횟수가 증가되었습니다.");
-		map[charX + dx][charY + dy].category = '.';
+		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
 		moveCount += 15;
-		break;
-
-	case 'm':
+	} else if (category == CATEGORY.DECREASE_MOVE) {
 		printQuote("알림", "이동 횟수가 감소되었습니다.");
-		map[charX + dx][charY + dy].category = '.';
+		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
 		moveCount -= 15;
-		break;
-
 	}
 
 	charX += dx;
