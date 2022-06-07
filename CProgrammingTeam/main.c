@@ -23,7 +23,7 @@ int score = 0, rankSize = 0;
 int main() {
 	hideConsoleCursor();
 	setConsoleSize(consoleX, consoleY);
-	//initStory();
+	initStory();
 	if (initLobby()) return 0;
 	for (;;) {
 		initGame();
@@ -77,6 +77,7 @@ int initLobby() {
 	printString(18, 27, "+-------------------------+");
 	printString(18, 28, "| 종료                    |");
 	printString(18, 29, "+-------------------------+");
+	printString(18, 31, "↑/↓, ENTER 키로 메뉴 선택");
 	while (1) {
 		key = _getch();
 		if (key == 224) {
