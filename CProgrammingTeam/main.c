@@ -21,6 +21,7 @@ int score = 0, rankSize = 0;
 int treasureX, treasureY;
 
 int main() {
+	srand((unsigned int)time(NULL));
 	hideConsoleCursor();
 	setConsoleSize(consoleX, consoleY);
 	initStory();
