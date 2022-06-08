@@ -84,7 +84,7 @@ void initStory() {
 int initLobby() {
 	int key;
 	int diff = 0;
-	system("cls");
+	cls();
 	gotoxy(20, 9);
 	printSequence("난이도를 선택하세요");
 	setTextColor(COLOR.YELLOW);
@@ -142,7 +142,8 @@ int initLobby() {
 				difficulty = diff;
 				return 0;
 			case 3:
-				return 2;
+				initHelp();
+				return 0;
 			case 4:
 				return 1;
 			}
@@ -248,7 +249,7 @@ void initGame() {
 }
 
 int playGame() {
-	system("cls");
+	cls();
 	printSight();
 
 	char ch;
@@ -371,7 +372,7 @@ void clearSight() {
 }
 
 void gameClear() {
-	system("cls");
+	cls();
 	gotoxy(0, 0);
 	printf("클리어");
 	_getch();
@@ -385,14 +386,14 @@ void gameOver() {
 	}
 	free(map);
 
-	system("cls");
+	cls();
 	
 	printString(11, 10, "  _____                         ____");
-	printString(11, 11, " / ____|                       / __ \\");
+	printString(11, 11, " / ____|                       / __ `");
 	printString(11, 12, "| |  __  __ _ _ __ ___   ___  | |  | |_   _____ _ __");
-	printString(11, 13, "| | |_ |/ _` | '_ ` _ \\ / _ \\ | |  | \\ \\ / / _ \\ '__|");
-	printString(11, 14, "| |__| | (_| | | | | | |  __/ | |__| |\\ V /  __/ |");
-	printString(11, 15, " \\_____|\\__,_|_| |_| |_|\\___|  \\____/  \\_/ \\___|_|");
+	printString(11, 13, "| | |_ |/ _` | '_ ` _ ` / _ ` | |  | ` ` / / _ ` '__|");
+	printString(11, 14, "| |__| | (_| | | | | | |  __/ | |__| |` V /  __/ |");
+	printString(11, 15, " `_____|`__,_|_| |_| |_|`___|  `____/  `_/ `___|_|");
 
 	gotoxy(10, 17);
 	printf("SCORE: %d", score);
@@ -402,7 +403,7 @@ void gameOver() {
 		scanf("%s", &rank[9].name);
 		rank[9].score = score;
 	} else if (rankSize < 10) {
-		printString(10, 21, "NAME : ");
+		printString(10, 19, "NAME : ");
 		scanf("%s", &rank[rankSize].name);
 		rank[rankSize].score = score;
 		rankSize++;
@@ -410,11 +411,23 @@ void gameOver() {
 
 	sort(rank, rankSize);
 	score = 0;
-	system("cls");
-	gotoxy(10, 10);
-	printf("=== 랭 킹 ===\n");
+	cls();
+	printString(11, 10, " _____             _    _             ");
+	printString(11, 11, "|  __ `           | |  (_)            ");
+	printString(11, 12, "| |__) |__ _ _ __ | | ___ _ __   __ _ ");
+	printString(11, 13, "|  _  // _` | '_ `| |/ / | '_ ` / _` |");
+	printString(11, 14, "| | ` ` (_| | | | |   <| | | | | (_| |");
+	printString(11, 15, "|_|  `_`__,_|_| |_|_|`_`_|_| |_|`__, |");
+	printString(11, 16, "                                 __/ |");
+	printString(11, 17, "                                |___/ ");
+
 	for (int i = 0; i < rankSize; i++) {
-		printf("                    %s: %d점\n", rank[i].name, rank[i].score);
+		gotoxy(11, 19 + i);
+		printf("%s: %d점\n", rank[i].name, rank[i].score);
 	}
 	_getch();
+}
+
+void initHelp() {
+
 }

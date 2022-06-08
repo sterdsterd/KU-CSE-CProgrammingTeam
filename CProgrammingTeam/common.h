@@ -33,24 +33,28 @@ const struct {
 	char DECREASE_MOVE;
 	char TREASURE;
 	char HINT;
-} CATEGORY = { 'W', '.', 'S', 's', 'M', 'm', 'T', 'H' };
+} CATEGORY = { 0, 1, 2, 3, 4, 5, 6, 7 };
 
 void initStory();
 int initLobby();
+void generateMaze();
+void generateItem(int amount, char category);
 void initGame();
+void initHelp();
 void printSight();
 void clearSight();
 int playGame();
+void gameClear();
 void gameOver();
 int collisionCheck(Object** map, int dx, int dy);
+
 void categoryToChar(char c) {
 	if (c == CATEGORY.BLANK) printf("  ");
 	else if (c == CATEGORY.WALL) {
 		setTextColor(COLOR.DARK_GREY);
 		printf("бс");
 		setTextColor(COLOR.GREY);
-	}
-	else {
+	} else {
 		setTextColor(COLOR.YELLOW);
 		printf("б┌");
 		setTextColor(COLOR.GREY);

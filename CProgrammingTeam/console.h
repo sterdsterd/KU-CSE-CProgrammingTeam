@@ -58,3 +58,7 @@ void printSequence(char* str) {
 		Sleep(50);
 	}
 }
+
+void cls() {
+	system("cls");
+}
