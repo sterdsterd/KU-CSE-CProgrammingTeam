@@ -46,6 +46,7 @@ void clearSight();
 int playGame();
 void gameClear();
 void gameOver();
+void initRank();
 int collisionCheck(Object** map, int dx, int dy);
 
 void categoryToChar(char c) {

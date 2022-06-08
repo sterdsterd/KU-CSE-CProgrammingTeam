@@ -10,9 +10,26 @@ void setConsoleSize(int x, int y) {
 	SetConsoleWindowInfo(GetStdHandle(STD_OUTPUT_HANDLE), TRUE, &windowSize);
 }
 
+/*
+0 = 검정색
+1 = 파란색
+ 2 = 초록색
+3 = 옥색
+ 4 = 빨간색
+5 = 자주색
+ 6 = 노란색
+7 = 흰색
+ 8 = 회색
+9 = 연한 파란색
+ 10 = 연한 초록색
+11 = 연한 옥색
+ 12 = 연한 빨간색
+13 = 연한 자주색
+ 14 = 연한 노란색
+15 = 진한 흰색 */
 const struct {
-	char GREY, YELLOW, DARK_GREY;
-} COLOR = {7, 6, 8};
+	char RED, YELLOW, GREY, DARK_GREY, WHITE;
+} COLOR = {4, 6, 7, 8, 15};
 
 void setTextColor(int code) {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), code);
@@ -32,9 +49,9 @@ void printString(int x, int y, char s[]) {
 }
 
 void printQuote(char* name, char* line) {
-	gotoxy(0, 40);
+	gotoxy(0, 42);
 	printf("+---------------+\n| %s", name);
-	gotoxy(8, 41);
+	gotoxy(8, 43);
 	printf("|\n");
 	printf("+--------------------------------------------------------------------------------------------------+\n");
 	printf("|                                                                                                  |\n");
@@ -42,11 +59,9 @@ void printQuote(char* name, char* line) {
 	printf("|                                                                                                  |\n");
 	printf("|                                                                                                  |\n");
 	printf("|                                                                                                  |\n");
-	printf("|                                                                                                  |\n");
-	printf("|                                                                                                  |\n");
 	printf("+--------------------------------------------------------------------------------------------------+");
 
-	gotoxy(1, 43);
+	gotoxy(1, 45);
 	printf("%s", line);
 	//_getch();
 
