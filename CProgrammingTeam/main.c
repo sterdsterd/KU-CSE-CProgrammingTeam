@@ -316,13 +316,19 @@ int collisionCheck(Object** map, int dx, int dy) {
 		printQuote("시야 감소", "밤이 되었습니다... 시야가 감소합니다.");
 		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
 	} else if (category == CATEGORY.INCREASE_MOVE) {
+		system("color 20");
 		printQuote("체력 증가", "보급품으로 기초 식량을 얻었습니다. 기력이 회복하여 체력이 증가합니다!");
 		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
 		moveCount += 15;
+		Sleep(70);
+		system("color 07");
 	} else if (category == CATEGORY.DECREASE_MOVE) {
+		system("color 40");
 		printQuote("체력 감소", "미로 속 함정에 걸렸습니다. 주변에서 화살 세례가 이루어집니다.\n| 다행히 목숨은 건졌지만 출혈이 발생하여 체력이 감소합니다.");
 		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
 		moveCount -= 15;
+		Sleep(70);
+		system("color 07");
 	} else if (category == CATEGORY.HINT) {
 		if (rand() % 2) {
 			printQuote("힌트 발견", "");

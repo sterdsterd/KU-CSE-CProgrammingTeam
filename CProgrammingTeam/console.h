@@ -28,8 +28,8 @@ void setConsoleSize(int x, int y) {
  14 = 연한 노란색
 15 = 진한 흰색 */
 const struct {
-	char RED, YELLOW, GREY, DARK_GREY, WHITE;
-} COLOR = {4, 6, 7, 8, 15};
+	char BLACK, GREEN, RED, YELLOW, GREY, DARK_GREY, WHITE;
+} COLOR = {0, 2, 4, 6, 7, 8, 15};
 
 void setTextColor(int code) {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), code);
