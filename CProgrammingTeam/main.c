@@ -235,6 +235,16 @@ void initGame() {
 	generateItem(20, CATEGORY.HINT);
 	generateItem(1, CATEGORY.TREASURE);
 
+	for (int i = 0; i < 1; i++) {
+		int x = rand() % (mapSize - 2) + 1;
+		int y = rand() % (mapSize - 2) + 1;
+		if (map[x][y].category != CATEGORY.BLANK) {
+			i--;
+			continue;
+		}
+		charX = x;
+		charY = y;
+	}
 }
 
 int playGame() {
@@ -376,16 +386,23 @@ void gameOver() {
 	free(map);
 
 	system("cls");
-	printString(10, 10, "GAME OVER");
-	gotoxy(10, 12);
+	
+	printString(11, 10, "  _____                         ____");
+	printString(11, 11, " / ____|                       / __ \\");
+	printString(11, 12, "| |  __  __ _ _ __ ___   ___  | |  | |_   _____ _ __");
+	printString(11, 13, "| | |_ |/ _` | '_ ` _ \\ / _ \\ | |  | \\ \\ / / _ \\ '__|");
+	printString(11, 14, "| |__| | (_| | | | | | |  __/ | |__| |\\ V /  __/ |");
+	printString(11, 15, " \\_____|\\__,_|_| |_| |_|\\___|  \\____/  \\_/ \\___|_|");
+
+	gotoxy(10, 17);
 	printf("SCORE: %d", score);
 
 	if (rankSize == 10 && rank[9].score < score) {
-		printString(10, 14, "NAME : ");
+		printString(10, 19, "NAME : ");
 		scanf("%s", &rank[9].name);
 		rank[9].score = score;
 	} else if (rankSize < 10) {
-		printString(10, 14, "NAME : ");
+		printString(10, 21, "NAME : ");
 		scanf("%s", &rank[rankSize].name);
 		rank[rankSize].score = score;
 		rankSize++;
