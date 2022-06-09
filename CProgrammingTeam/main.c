@@ -271,8 +271,7 @@ void initGame() {
 	generateItem(objectAmount, CATEGORY.INCREASE_SIGHT, 2);
 	generateItem(objectAmount, CATEGORY.DECREASE_SIGHT, 2);
 	generateItem(objectAmount, CATEGORY.HINT, 1);
-	generateItem(objectAmount, CATEGORY.TREASURE, 1);
-	
+
 	for (int i = 0; i < 1; i++) {
 		int x = rand() % (mapSize - 2) + 1;
 		int y = rand() % (mapSize - 2) + 1;
@@ -515,6 +514,17 @@ void initHelp() {
 	printString(19, 16, "              | |");
 	printString(19, 17, "              |_|    ");
 
+	printString(10, 20, "WASD 키를 이용하여 캐릭터를 움직일 수 있습니다.");
+	printString(10, 21, "W : 위로 이동");
+	printString(10, 22, "A : 왼쪽으로 이동");
+	printString(10, 23, "S : 아래로 이동");
+	printString(10, 24, "D : 오른쪽으로 이동");
+
+	printString(10, 26, "체력이 0이 되면 게임 오버됩니다.");
+	printString(10, 27, "아이템을 획득하여 시야와 체력을 줄이거나 늘일 수 있습니다.");
+	printString(10, 28, "성배의 위치를 알 수 있는 힌트를 맵 곳곳에서 발견할 수 있습니다.");
+
+	printString(10, 30, "계속하려면 아무 키나 누르세요.");
 
 	_getch();
 }
