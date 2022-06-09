@@ -9,13 +9,13 @@ Score rank[10];
 int difficulty;
 const Difficulty difficultyCons[3] = {
 	// EASY
-	{.mapSize = 41, .sightSize = 11, .moveCount = 100, .minSight = 7, .maxSight = 19},
+	{.mapSize = 41, .sightSize = 11, .moveCount = 100, .minSight = 7, .maxSight = 19, .objectAmount = 15, .maxMoveAmount = 15},
 	// NORMAL
-	{.mapSize = 71, .sightSize = 21, .moveCount = 150, .minSight = 13, .maxSight = 29},
+	{.mapSize = 71, .sightSize = 21, .moveCount = 150, .minSight = 13, .maxSight = 29, .objectAmount = 45, .maxMoveAmount = 25},
 	// HARD
-	{.mapSize = 101, .sightSize = 31, .moveCount = 200, .minSight = 23, .maxSight = 39}
+	{.mapSize = 101, .sightSize = 31, .moveCount = 200, .minSight = 23, .maxSight = 39, .objectAmount = 100, .maxMoveAmount = 35}
 };
-int charX, charY, mapSize, sightSize, moveCount;
+int charX, charY, mapSize, sightSize, moveCount, objectAmount;
 int consoleX = 100, consoleY = 50;
 int score = 0, rankSize = 0;
 int treasureX, treasureY;
@@ -36,7 +36,7 @@ int main() {
 		if (playGame() == 1) {
 			gameOver();
 			isClear = 0;
-		} else if (difficulty <= 2) { //playGame() is always 2
+		} else if (difficulty < 2) { //playGame() is always 2
 			difficulty++;
 			score += 200;
 			for (int i = 0; i < mapSize; i++) {
@@ -113,7 +113,7 @@ int initLobby() {
 	printString(13, 12, "           | (___  _   _ _ ____   _____   _____ ");
 	printString(13, 13, "            `___ `| | | | '__` ` / / ` ` / / _ `");
 	printString(13, 14, "            ____) | |_| | |   ` V /| |` V /  __/");
-	printString(13, 15, "           |_____/ `__,_|_|    `_/ |_| `_/ `___|");
+	printString(13, 15, "           |_____/ `__,_|_|    `_/ |_| `_/ `___|"); 
 	setTextColor(COLOR.YELLOW);
 	printString(18, 18, "+-------------------------+");
 	printString(17, 19, "▶ |                         | ◀");
@@ -217,7 +217,7 @@ void generateMaze() {
 	}
 }
 
-void generateItem(int amount, char category) {
+void generateItem(int amount, char category, int max) {
 	for (int i = 0; i < amount; i++) {
 		int x = rand() % (mapSize - 2) + 1;
 		int y = rand() % (mapSize - 2) + 1;
@@ -227,6 +227,7 @@ void generateItem(int amount, char category) {
 		}
 		map[x][y].category = category;
 		map[x][y].isActive = 1;
+		map[x][y].amount = rand() % max + 1;
 		if (map[x][y].category == CATEGORY.TREASURE) {
 			treasureX = x;
 			treasureY = y;
@@ -239,6 +240,8 @@ void initGame() {
 	mapSize = difficultyCons[difficulty].mapSize;
 	sightSize = difficultyCons[difficulty].sightSize;
 	moveCount = difficultyCons[difficulty].moveCount;
+	objectAmount = difficultyCons[difficulty].objectAmount;
+	int maxMoveAmount = difficultyCons[difficulty].maxMoveAmount;
 
 	// 캐릭터의 x, y값 -> 맵 정중앙
 	charX = mapSize / 2;
@@ -252,12 +255,12 @@ void initGame() {
 
 	generateMaze();
 
-	generateItem(20, CATEGORY.INCREASE_MOVE);
-	generateItem(20, CATEGORY.DECREASE_MOVE);
-	generateItem(20, CATEGORY.INCREASE_SIGHT);
-	generateItem(20, CATEGORY.DECREASE_SIGHT);
-	generateItem(20, CATEGORY.HINT);
-	generateItem(1, CATEGORY.TREASURE);
+	generateItem(objectAmount, CATEGORY.INCREASE_MOVE, maxMoveAmount);
+	generateItem(objectAmount, CATEGORY.DECREASE_MOVE, maxMoveAmount);
+	generateItem(objectAmount, CATEGORY.INCREASE_SIGHT, 2);
+	generateItem(objectAmount, CATEGORY.DECREASE_SIGHT, 2);
+	generateItem(objectAmount, CATEGORY.HINT, 1);
+	generateItem(objectAmount, CATEGORY.TREASURE, 1);
 
 	for (int i = 0; i < 1; i++) {
 		int x = rand() % (mapSize - 2) + 1;
@@ -297,47 +300,55 @@ int playGame() {
 
 int collisionCheck(Object** map, int dx, int dy) {
 	char category = map[charX + dx][charY + dy].category;
+	int amount = map[charX + dx][charY + dy].amount;
 
 	if (category == CATEGORY.WALL) {
 		return -1;
 	} else if (category == CATEGORY.TREASURE) {
 		return 2;
 	} else if (category == CATEGORY.INCREASE_SIGHT) {
-		if (sightSize + 4 <= difficultyCons[difficulty].maxSight) {
-			sightSize += 4;
+		if (sightSize + amount * 2 <= difficultyCons[difficulty].maxSight) {
+			sightSize += amount * 2;
 		}
-		printQuote("시야 증가", "보급품으로 플래시 라이트를 얻었습니다. 시야가 증가합니다.");
+		printQuote("시야 증가", "");
+		printf("보급품으로 플래시 라이트를 얻었습니다. 시야가 %d만큼 증가합니다.", amount * 2);
 		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
 	} else if (category == CATEGORY.DECREASE_SIGHT) {
-		if (sightSize - 4 >= difficultyCons[difficulty].minSight) {
+		if (sightSize - amount * 2 >= difficultyCons[difficulty].minSight) {
 			clearSight();
-			sightSize -= 4;
+			sightSize -= amount * 2;
 		}
-		printQuote("시야 감소", "밤이 되었습니다... 시야가 감소합니다.");
+		printQuote("시야 감소", "");
+		printf("밤이 되었습니다... 시야가 %d만큼 감소합니다.", amount * 2);
+		gotoxy(1, 46);
 		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
 	} else if (category == CATEGORY.INCREASE_MOVE) {
 		system("color 20");
-		printQuote("체력 증가", "보급품으로 기초 식량을 얻었습니다. 기력이 회복하여 체력이 증가합니다!");
+		printQuote("체력 증가", "");
+		gotoxy(1, 46);
+		printf("보급품으로 기초 식량을 얻었습니다. 기력이 회복하여 체력이 %d만큼 증가합니다!", amount);
 		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
-		moveCount += 15;
-		Sleep(70);
+		moveCount += amount;
+		Sleep(50);
 		system("color 07");
 	} else if (category == CATEGORY.DECREASE_MOVE) {
 		system("color 40");
-		printQuote("체력 감소", "미로 속 함정에 걸렸습니다. 주변에서 화살 세례가 이루어집니다.\n| 다행히 목숨은 건졌지만 출혈이 발생하여 체력이 감소합니다.");
+		printQuote("체력 감소", "");
+		gotoxy(1, 46);
+		printf("미로 속 함정에 걸렸습니다.주변에서 화살 세례가 이루어집니다.\n| 다행히 목숨은 건졌지만 출혈이 발생하여 체력이 %d만큼 감소합니다.", amount);
 		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
-		moveCount -= 15;
-		Sleep(70);
+		moveCount -= amount;
+		Sleep(50);
 		system("color 07");
 	} else if (category == CATEGORY.HINT) {
 		if (rand() % 2) {
 			printQuote("힌트 발견", "");
-			gotoxy(1, 45);
+			gotoxy(1, 46);
 			printf("성배의 x좌표는 %d 입니다.", treasureX);
 			map[charX + dx][charY + dy].category = CATEGORY.BLANK;
 		} else {
 			printQuote("힌트 발견", "");
-			gotoxy(1, 45);
+			gotoxy(1, 46);
 			printf("성배의 y좌표는 %d 입니다.", treasureY);
 			map[charX + dx][charY + dy].category = CATEGORY.BLANK;
 		}
@@ -354,7 +365,8 @@ int collisionCheck(Object** map, int dx, int dy) {
 
 void printSight() {
 
-	gotoxy(0, 0);
+	printString(0, 0, difficulty == 0 ? "EASY" : difficulty == 1 ? "NORMAL" : "HARD");
+	gotoxy(0, 1);
 	printf("남은 체력: %d  ", moveCount);
 	// startX, startY = 맵 프린트 시작 위치
 	int startX = (consoleX / 2 - sightSize) / 2, startY = (consoleY - sightSize) / 2;
@@ -376,9 +388,9 @@ void printSight() {
 		}
 		gotoxy(startX - 1, startY + i);
 	}
-	gotoxy(startX - 1, startY - 3);
+	gotoxy(0, 2);
 	printf("좌표: (%d, %d)   ", charX, charY);
-	gotoxy(startX - 1, startY - 2);
+	gotoxy(0, 3);
 	printf("점수: %d", score);
 }
 
@@ -437,12 +449,13 @@ void gameClear() {
 	free(map);
 
 	printString(15, 10, "          _ _    _____ _                 ");
-	printString(15, 11, "    /\   | | |  / ____| |                ");
-	printString(15, 12, "   /  \  | | | | |    | | ___  __ _ _ __ ");
-	printString(15, 13, "  / /\ \ | | | | |    | |/ _ \/ _` | '__|");
-	printString(15, 14, " / ____ \| | | | |____| |  __/ (_| | |   ");
-	printString(15, 15, "/_/    \_\_|_|  \_____|_|\___|\__,_|_|   ");
+	printString(15, 11, "    /`   | | |  / ____| |                ");
+	printString(15, 12, "   /  `  | | | | |    | | ___  __ _ _ __ ");
+	printString(15, 13, "  / /` ` | | | | |    | |/ _ `/ _` | '__|");
+	printString(15, 14, " / ____ `| | | | |____| |  __/ (_| | |   ");
+	printString(15, 15, "/_/    `_`_|_|  `_____|_|`___|`__,_|_|   ");
 
+	score += 500;
 	initRank();
                                 
 }

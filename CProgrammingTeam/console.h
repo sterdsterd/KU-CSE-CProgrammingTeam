@@ -13,20 +13,21 @@ void setConsoleSize(int x, int y) {
 /*
 0 = 검정색
 1 = 파란색
- 2 = 초록색
+2 = 초록색
 3 = 옥색
- 4 = 빨간색
+4 = 빨간색
 5 = 자주색
- 6 = 노란색
+6 = 노란색
 7 = 흰색
- 8 = 회색
+8 = 회색
 9 = 연한 파란색
- 10 = 연한 초록색
+10 = 연한 초록색
 11 = 연한 옥색
- 12 = 연한 빨간색
+12 = 연한 빨간색
 13 = 연한 자주색
- 14 = 연한 노란색
-15 = 진한 흰색 */
+14 = 연한 노란색
+15 = 진한 흰색
+*/
 const struct {
 	char BLACK, GREEN, RED, YELLOW, GREY, DARK_GREY, WHITE;
 } COLOR = {0, 2, 4, 6, 7, 8, 15};
@@ -49,19 +50,18 @@ void printString(int x, int y, char s[]) {
 }
 
 void printQuote(char* name, char* line) {
-	gotoxy(0, 42);
+	gotoxy(0, 43);
 	printf("+---------------+\n| %s", name);
-	gotoxy(8, 43);
+	gotoxy(8, 44);
 	printf("|\n");
 	printf("+--------------------------------------------------------------------------------------------------+\n");
 	printf("|                                                                                                  |\n");
 	printf("|                                                                                                  |\n");
 	printf("|                                                                                                  |\n");
 	printf("|                                                                                                  |\n");
-	printf("|                                                                                                  |\n");
 	printf("+--------------------------------------------------------------------------------------------------+");
 
-	gotoxy(1, 45);
+	gotoxy(1, 46);
 	printf("%s", line);
 	//_getch();
 

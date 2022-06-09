@@ -9,6 +9,7 @@ typedef struct Coord {
 typedef struct Object {
 	int isActive;
 	char category;
+	int amount;
 } Object;
 
 typedef struct Score {
@@ -22,6 +23,8 @@ typedef struct Difficulty {
 	int moveCount;
 	int maxSight;
 	int minSight;
+	int objectAmount;
+	int maxMoveAmount;
 } Difficulty;
 
 const struct {
