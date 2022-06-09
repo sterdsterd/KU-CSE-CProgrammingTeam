@@ -260,8 +260,7 @@ void initGame() {
 	generateItem(objectAmount, CATEGORY.INCREASE_SIGHT, 2);
 	generateItem(objectAmount, CATEGORY.DECREASE_SIGHT, 2);
 	generateItem(objectAmount, CATEGORY.HINT, 1);
-	generateItem(objectAmount, CATEGORY.TREASURE, 1);
-
+	
 	for (int i = 0; i < 1; i++) {
 		int x = rand() % (mapSize - 2) + 1;
 		int y = rand() % (mapSize - 2) + 1;
