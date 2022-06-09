@@ -29,21 +29,31 @@ int main() {
 	for (;;) {
 		if (!isClear) {
 			int k = initLobby();
+			// 도움말 선택 시
 			if (k == 2) continue;
+			// 게임 종료 선택 시
 			else if (k) break;
 		}
 		initGame();
+		// 게임 오버 시
 		if (playGame() == 1) {
 			gameOver();
 			isClear = 0;
+		// EASY, NORMAL 난이도에서 게임 클리어 시
 		} else if (difficulty < 2) { //playGame() is always 2
+			// 다음 난이도로
 			difficulty++;
 			score += 200;
+			// 맵 동적할당 해제
 			for (int i = 0; i < mapSize; i++) {
 				free(map[i]);
 			}
 			free(map);
 			isClear = 1;
+			cls();
+			printQuote("알림", "성배를 찾았습니다. 다음 레벨로 이동합니다.\n| 계속하려면 아무 키나 누르세요.");
+			_getch();
+		// HARD 난이도에서 게임 클리어 시
 		} else {
 			gameClear();
 			isClear = 0;
@@ -75,6 +85,8 @@ void initStory() {
 		"제 5구역의 대표로 뽑힌 당신은 헝거게임에 참가하여 생존을 위해 광활한 미로 속을 거닐게 되는데...",
 		"과연 살아남을 수 있을까?" };
 
+	// 한 글자씩 출력
+	// 스페이스 입력 시 남은 스트링 한 번에 출력
 	for (int j = 0; j < sizeof(str) / sizeof(char*); j++) {
 		gotoxy((100 - strlen(str[j])) / 4, 5 + j * 2);
 		int i;
@@ -91,8 +103,8 @@ void initStory() {
 		printf("%s", substr);
 		printf("\n");
 	}
-
-	char con[] = "계속하려면 아무 키나 누르세요";
+	
+	char con[] = " 계속하려면 아무 키나 누르세요";
 	gotoxy((100 - strlen(con)) / 4, 6 + sizeof(str) / sizeof(char*) * 2);
 	printf("%s", con);
 	_getch();
@@ -100,7 +112,7 @@ void initStory() {
 
 int initLobby() {
 	int key;
-	int diff = 0;
+	int diff = 0; //현재 선택된 메뉴 인덱스
 	cls();
 	setTextColor(COLOR.WHITE);
 	printString(13, 5, " __  __                                         ");
@@ -170,7 +182,6 @@ int initLobby() {
 			case 4:
 				return 1;
 			}
-
 		}
 	}
 }
@@ -260,6 +271,7 @@ void initGame() {
 	generateItem(objectAmount, CATEGORY.INCREASE_SIGHT, 2);
 	generateItem(objectAmount, CATEGORY.DECREASE_SIGHT, 2);
 	generateItem(objectAmount, CATEGORY.HINT, 1);
+	generateItem(objectAmount, CATEGORY.TREASURE, 1);
 	
 	for (int i = 0; i < 1; i++) {
 		int x = rand() % (mapSize - 2) + 1;
@@ -303,8 +315,10 @@ int collisionCheck(Object** map, int dx, int dy) {
 
 	if (category == CATEGORY.WALL) {
 		return -1;
+
 	} else if (category == CATEGORY.TREASURE) {
 		return 2;
+
 	} else if (category == CATEGORY.INCREASE_SIGHT) {
 		if (sightSize + amount * 2 <= difficultyCons[difficulty].maxSight) {
 			sightSize += amount * 2;
@@ -312,6 +326,7 @@ int collisionCheck(Object** map, int dx, int dy) {
 		printQuote("시야 증가", "");
 		printf("보급품으로 플래시 라이트를 얻었습니다. 시야가 %d만큼 증가합니다.", amount * 2);
 		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
+
 	} else if (category == CATEGORY.DECREASE_SIGHT) {
 		if (sightSize - amount * 2 >= difficultyCons[difficulty].minSight) {
 			clearSight();
@@ -321,6 +336,7 @@ int collisionCheck(Object** map, int dx, int dy) {
 		printf("밤이 되었습니다... 시야가 %d만큼 감소합니다.", amount * 2);
 		gotoxy(1, 46);
 		map[charX + dx][charY + dy].category = CATEGORY.BLANK;
+
 	} else if (category == CATEGORY.INCREASE_MOVE) {
 		system("color 20");
 		printQuote("체력 증가", "");
@@ -330,6 +346,7 @@ int collisionCheck(Object** map, int dx, int dy) {
 		moveCount += amount;
 		Sleep(50);
 		system("color 07");
+
 	} else if (category == CATEGORY.DECREASE_MOVE) {
 		system("color 40");
 		printQuote("체력 감소", "");
@@ -339,17 +356,20 @@ int collisionCheck(Object** map, int dx, int dy) {
 		moveCount -= amount;
 		Sleep(50);
 		system("color 07");
+
 	} else if (category == CATEGORY.HINT) {
 		if (rand() % 2) {
 			printQuote("힌트 발견", "");
 			gotoxy(1, 46);
 			printf("성배의 x좌표는 %d 입니다.", treasureX);
 			map[charX + dx][charY + dy].category = CATEGORY.BLANK;
+
 		} else {
 			printQuote("힌트 발견", "");
 			gotoxy(1, 46);
 			printf("성배의 y좌표는 %d 입니다.", treasureY);
 			map[charX + dx][charY + dy].category = CATEGORY.BLANK;
+
 		}
 	}
 
@@ -453,6 +473,8 @@ void gameClear() {
 	printString(15, 13, "  / /` ` | | | | |    | |/ _ `/ _` | '__|");
 	printString(15, 14, " / ____ `| | | | |____| |  __/ (_| | |   ");
 	printString(15, 15, "/_/    `_`_|_|  `_____|_|`___|`__,_|_|   ");
+
+	printString(14, 17, "성배를 찾았습니다. 당신이 최종 우승자입니다!");
 
 	score += 500;
 	initRank();
