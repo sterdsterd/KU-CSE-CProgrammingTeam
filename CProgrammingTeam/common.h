@@ -41,7 +41,7 @@ const struct {
 void initStory();
 int initLobby();
 void generateMaze();
-void generateItem(int amount, char category);
+void generateItem(int amount, char category, int max);
 void initGame();
 void initHelp();
 void printSight();
