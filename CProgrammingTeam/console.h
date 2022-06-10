@@ -36,12 +36,14 @@ void setTextColor(int code) {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), code);
 }
 
-void hideConsoleCursor() {
+void hideConsoleObjects() {
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO info;
 	info.dwSize = 100;
 	info.bVisible = FALSE;
 	SetConsoleCursorInfo(consoleHandle, &info);
+
+	ShowScrollBar(GetConsoleWindow(), SB_BOTH, 0);
 }
 
 void printString(int x, int y, char s[]) {
@@ -51,18 +53,19 @@ void printString(int x, int y, char s[]) {
 
 void printQuote(char* name, char* line) {
 	gotoxy(0, 43);
-	printf("+---------------+\n| %s", name);
-	gotoxy(8, 44);
-	printf("|\n");
-	printf("+--------------------------------------------------------------------------------------------------+\n");
-	printf("|                                                                                                  |\n");
-	printf("|                                                                                                  |\n");
-	printf("|                                                                                                  |\n");
-	printf("|                                                                                                  |\n");
-	printf("+--------------------------------------------------------------------------------------------------+");
+	printf(" 忙式式式式式式式式式式式忖\n 弛 %s", name);
+	gotoxy(6, 44);
+	printf(" 弛");
+	gotoxy(0, 45);
+	printf(" 戍式式式式式式式式式式式扛式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式忖\n");
+	printf(" 弛                                                                                                  弛\n");
+	printf(" 弛                                                                                                  弛\n");
+	printf(" 弛                                                                                                  弛\n");
+	printf(" 弛                                                                                                  弛\n");
+	printf(" 戌式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式式戎");
 
 	gotoxy(1, 46);
-	printf("%s", line);
+	printf(" %s", line);
 	//_getch();
 
 }
