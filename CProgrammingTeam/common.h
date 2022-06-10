@@ -1,5 +1,4 @@
 #include <Windows.h>
-#include "console.h"
 
 typedef struct Coord {
 	int x;
@@ -51,19 +50,6 @@ void gameClear();
 void gameOver();
 void initRank();
 int collisionCheck(Object** map, int dx, int dy);
-
-void categoryToChar(char c) {
-	if (c == CATEGORY.BLANK) printf("  ");
-	else if (c == CATEGORY.WALL) {
-		setTextColor(COLOR.DARK_GREY);
-		printf("бс");
-		setTextColor(COLOR.GREY);
-	} else {
-		setTextColor(COLOR.YELLOW);
-		printf("б┌ ");
-		setTextColor(COLOR.GREY);
-	}
-}
 
 void sort(Score* arr, int size) {
 	int i, j;

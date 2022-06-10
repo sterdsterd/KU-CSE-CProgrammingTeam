@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <stdlib.h>
 #include "common.h"
+#include "console.h"
 
 Object** map = NULL;
 Score rank[10];
@@ -24,6 +25,7 @@ int main() {
 	srand((unsigned int)time(NULL));
 	hideConsoleObjects();
 	setConsoleSize(consoleX, consoleY);
+	//printf("★●■♠♥♣◈▣▤▥▨▧▦▩"); _getch();
 	initStory();
 	int isClear = 0;
 	for (;;) {
@@ -64,8 +66,11 @@ int main() {
 }
 
 void initStory() {
+	setTextColor(COLOR.GREY);
 	gotoxy((100 - strlen("스킵하려면 SPACE를 누르세요")) / 4, 1);
 	printf("스킵하려면 SPACE를 누르세요");
+
+	setTextColor(COLOR.WHITE);
 
 	char* str[] = { "제 2차 세계대전에서 독일과 일본이 승리를 하게 되고",
 		"전 세계는 두 국가의 지배 아래에 놓이게 된다.",
@@ -103,9 +108,11 @@ void initStory() {
 		printf("%s", substr);
 		printf("\n");
 	}
-	
+
+	setTextColor(COLOR.GREY);
+
 	char con[] = " 계속하려면 아무 키나 누르세요";
-	gotoxy((100 - strlen(con)) / 4, 6 + sizeof(str) / sizeof(char*) * 2);
+	gotoxy((100 - strlen(con)) / 4, 7 + sizeof(str) / sizeof(char*) * 2);
 	printf("%s", con);
 	_getch();
 }
@@ -397,9 +404,9 @@ int collisionCheck(Object** map, int dx, int dy) {
 
 void printSight() {
 	gotoxy(0, 0);
-	printf("현재 난이도: %s", difficulty == 0 ? "EASY" : difficulty == 1 ? "NORMAL" : "HARD");
+	printf("난이도: %s", difficulty == 0 ? "EASY" : difficulty == 1 ? "NORMAL" : "HARD");
 	gotoxy(0, 1);
-	printf("남은 체력: %d  ", moveCount);
+	printf("체  력: %d  ", moveCount);
 	// startX, startY = 맵 프린트 시작 위치
 	int startX = (consoleX / 2 - sightSize) / 2, startY = (consoleY - sightSize) / 2;
 	gotoxy(startX - 1, startY - 1);
@@ -433,9 +440,9 @@ void printSight() {
 		gotoxy(startX - 1, startY + i);
 	}
 	gotoxy(0, 2);
-	printf("좌표: (%d, %d)   ", charX, charY);
-	gotoxy(0, 3);
-	printf("점수: %d", score);
+	printf("좌  표: (%d, %d)   ", charX, charY);
+	gotoxy(44, 0);
+	printf("점  수: %5d", score);
 }
 
 void clearSight() {
