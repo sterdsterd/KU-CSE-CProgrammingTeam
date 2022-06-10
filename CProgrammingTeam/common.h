@@ -60,7 +60,7 @@ void categoryToChar(char c) {
 		setTextColor(COLOR.GREY);
 	} else {
 		setTextColor(COLOR.YELLOW);
-		printf("¡Ú");
+		printf("¡Ú ");
 		setTextColor(COLOR.GREY);
 	}
 }
