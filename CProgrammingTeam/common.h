@@ -35,7 +35,7 @@ const struct {
 	char DECREASE_MOVE;
 	char TREASURE;
 	char HINT;
-} CATEGORY = { 0, 1, 2, 3, 4, 5, 6, 7 };
+} CATEGORY = { 'W', '.', 'S', 's', 'M', 'm', 'T', 'H'};
 
 void initStory();
 int initLobby();

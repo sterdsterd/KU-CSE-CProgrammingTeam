@@ -93,6 +93,7 @@ void categoryToChar(char c) {
 	else {
 		setTextColor(COLOR.YELLOW);
 		printf("¡Ú");
+		//printf("%c ", c);
 		setTextColor(COLOR.GREY);
 	}
 }
