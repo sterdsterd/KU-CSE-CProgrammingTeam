@@ -6,8 +6,6 @@
 #include "console.h"
 #include "game.h"
 
-Object** map = NULL;
-
 int main() {
 	Game* game = NULL;
 	int isClear = 0;
@@ -36,7 +34,7 @@ int main() {
 			int difficulty = game->difficulty;
 			int score = game->score;
 			// 맵 동적할당 해제
-			destroyMap(&(difficultyCons[game->difficulty].mapSize));
+			destroyMap(&game, &(difficultyCons[game->difficulty].mapSize));
 			isClear = 1;
 			cls();
 			printQuote("알림", "성배를 찾았습니다. 다음 레벨로 이동합니다.\n │ 계속하려면 아무 키나 누르세요.");
@@ -113,7 +111,7 @@ int initLobby() {
 	printString(13, 5, " __  __                                         ");
 	printString(13, 6, "|  \\/  |                                        ");
 	printString(13, 7, "| \\  / | __ _ _______                           ");
-	printString(13, 8, "| |\\/| |/ _\\ |_  / _ \\                          ");
+	printString(13, 8, "| |\\/| |/ _` |_  / _ \\                          ");
 	printString(13, 9, "| |  | | (_| |/ /  __/                          ");
 	printString(13, 10, "|_|  |_|\\__,_/___\\___|              _           ");
 	printString(13, 11, "            / ____|                (_)          ");
@@ -183,9 +181,9 @@ void generateMaze(Game** game) {
 	for (y = 0; y < (*game)->mapSize; y++) {
 		for (x = 0; x < (*game)->mapSize; x++) {
 			if (x % 2 == 0 || y % 2 == 0)
-				map[x][y].category = CATEGORY.WALL;
+				((*game)->map)[x][y].category = CATEGORY.WALL;
 			else
-				map[x][y].category = CATEGORY.BLANK;
+				((*game)->map)[x][y].category = CATEGORY.BLANK;
 		}
 	}
 
@@ -199,21 +197,21 @@ void generateMaze(Game** game) {
 				continue;
 
 			if (y == (*game)->mapSize - 2) {
-				map[x + 1][y].category = CATEGORY.BLANK;
+				((*game)->map)[x + 1][y].category = CATEGORY.BLANK;
 				continue;
 			}
 
 			if (x == (*game)->mapSize - 2) {
-				map[x][y + 1].category = CATEGORY.BLANK;
+				((*game)->map)[x][y + 1].category = CATEGORY.BLANK;
 				continue;
 			}
 
 			if (rand() % 2 == 0) {
-				map[x + 1][y].category = CATEGORY.BLANK;
+				((*game)->map)[x + 1][y].category = CATEGORY.BLANK;
 				count++;
 			} else {
 				int randomIndex = rand() % count;
-				map[x - randomIndex * 2][y + 1].category = CATEGORY.BLANK;
+				((*game)->map)[x - randomIndex * 2][y + 1].category = CATEGORY.BLANK;
 				count = 1;
 			}
 		}
@@ -225,16 +223,16 @@ void generateItem(Game** game, int amount, char category, int max) {
 	for (i = 0; i < amount; i++) {
 		int x = rand() % ((*game)->mapSize - 2) + 1;
 		int y = rand() % ((*game)->mapSize - 2) + 1;
-		if (map[x][y].category != CATEGORY.BLANK) {
+		if (((*game)->map)[x][y].category != CATEGORY.BLANK) {
 			i--;
 			continue;
 		}
-		map[x][y].category = category;
-		map[x][y].isActive = 1;
-		map[x][y].amount = rand() % max + 1;
-		if (map[x][y].category == CATEGORY.INCREASE_MOVE && map[x][y].amount < 10)
-			map[x][y].amount = 10;
-		if (map[x][y].category == CATEGORY.TREASURE) {
+		((*game)->map)[x][y].category = category;
+		((*game)->map)[x][y].isActive = 1;
+		((*game)->map)[x][y].amount = rand() % max + 1;
+		if (((*game)->map)[x][y].category == CATEGORY.INCREASE_MOVE && ((*game)->map)[x][y].amount < 10)
+			((*game)->map)[x][y].amount = 10;
+		if (((*game)->map)[x][y].category == CATEGORY.TREASURE) {
 			(*game)->treasureX = x;
 			(*game)->treasureY = y;
 		}
@@ -242,20 +240,6 @@ void generateItem(Game** game, int amount, char category, int max) {
 }
 
 void initGame(Game** game) {
-
-	// difficulty에 맞게 map 배열 mapSize * mapSize 크기로 동적 할당
-	map = (Object**)malloc(sizeof(Object*) * (*game)->mapSize);
-	if (map == NULL) printf("ERR");
-	for (int i = 0; i < (*game)->mapSize; i++) {
-		map[i] = (Object*)malloc(sizeof(Object) * (*game)->mapSize);
-		if (map[i] == NULL) printf("ERR");
-		for (int j = 0; j < (*game)->mapSize; j++) {
-			map[i][j].amount = 0;
-			map[i][j].category = 0;
-			map[i][j].isActive = 0;
-		}
-	}
-
 	generateMaze(game);
 
 	generateItem(game, (*game)->objectAmount, CATEGORY.INCREASE_MOVE, (*game)->maxMoveAmount);
@@ -268,7 +252,7 @@ void initGame(Game** game) {
 	for (int i = 0; i < 1; i++) {
 		int x = rand() % ((*game)->mapSize - 2) + 1;
 		int y = rand() % ((*game)->mapSize - 2) + 1;
-		if (map[x][y].category != CATEGORY.BLANK) {
+		if (((*game)->map)[x][y].category != CATEGORY.BLANK) {
 			i--;
 			continue;
 		}
@@ -302,8 +286,8 @@ int playGame(Game** game) {
 }
 
 int collisionCheck(Game** game, int dx, int dy) {
-	char category = map[(*game)->charX + dx][(*game)->charY + dy].category;
-	int amount = map[(*game)->charX + dx][(*game)->charY + dy].amount;
+	char category = ((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category;
+	int amount = ((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].amount;
 
 	if (category == CATEGORY.WALL) {
 		return -1;
@@ -321,7 +305,7 @@ int collisionCheck(Game** game, int dx, int dy) {
 		printf("%d만큼 증가", amount * 2);
 		setTextColor(COLOR.GREY);
 		printf("합니다!");
-		map[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
+		((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
 
 	} else if (category == CATEGORY.DECREASE_SIGHT) {
 		cls();
@@ -334,7 +318,7 @@ int collisionCheck(Game** game, int dx, int dy) {
 		printf("%d만큼 감소", amount * 2);
 		setTextColor(COLOR.GREY);
 		printf("합니다.");
-		map[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
+		((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
 
 	} else if (category == CATEGORY.INCREASE_MOVE) {
 		system("color 20");
@@ -347,7 +331,7 @@ int collisionCheck(Game** game, int dx, int dy) {
 		printf("%d만큼 증가", amount);
 		setTextColor(COLOR.GREY);
 		printf("합니다!");
-		map[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
+		((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
 		(*game)->moveCount += amount;
 
 	} else if (category == CATEGORY.DECREASE_MOVE) {
@@ -361,19 +345,19 @@ int collisionCheck(Game** game, int dx, int dy) {
 		printf("%d만큼 감소", amount);
 		setTextColor(COLOR.GREY);
 		printf("합니다.");
-		map[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
+		((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
 		(*game)->moveCount -= amount;
 
 	} else if (category == CATEGORY.HINT) {
 		if (rand() % 2) {
 			printQuote("힌트 발견", "");
 			printf("성배의 x좌표는 %d 입니다.", (*game)->treasureX);
-			map[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
+			((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
 
 		} else {
 			printQuote("힌트 발견", "");
 			printf("성배의 y좌표는 %d 입니다.", (*game)->treasureY);
-			map[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
+			((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
 			
 		}
 	}
@@ -422,7 +406,7 @@ void printSight(Game** game) {
 				setTextColor(COLOR.GREY);
 			}
 			// 맵 안 오브젝트 표시
-			else categoryToChar(map[x][y].category);
+			else categoryToChar(((*game)->map)[x][y].category);
 		}
 		gotoxy(startX - 1, startY + i);
 	}
@@ -474,7 +458,7 @@ void initRank(Game** game) {
 void gameClear(Game** game) {
 	cls();
 
-	destroyMap((*game)->mapSize);
+	destroyMap(game, (*game)->mapSize);
 
 	printString(15, 10, "          _ _    _____ _                 ");
 	printString(15, 11, "    /\\   | | |  / ____| |                ");
@@ -491,11 +475,11 @@ void gameClear(Game** game) {
 }
 
 // 동적할당 해제
-void destroyMap(int mapSize) {
+void destroyMap(Game** game, int mapSize) {
 	for (int i = 0; i < mapSize; i++) {
-		free(map[i]);
+		free(((*game)->map)[i]);
 	}
-	free(map);
+	free(((*game)->map));
 }
 
 void gameOver(Game** game) {

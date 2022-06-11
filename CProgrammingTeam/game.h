@@ -8,11 +8,14 @@ const Difficulty difficultyCons[3] = {
 	// NORMAL
 	{.mapSize = 71, .sightSize = 21, .moveCount = 200, .minSight = 13, .maxSight = 29, .objectAmount = 45, .maxMoveAmount = 25},
 	// HARD
-	{.mapSize = 101, .sightSize = 37, .moveCount = 250, .minSight = 23, .maxSight = 37, .objectAmount = 100, .maxMoveAmount = 35}
+	{.mapSize = 101, .sightSize = 31, .moveCount = 250, .minSight = 23, .maxSight = 37, .objectAmount = 100, .maxMoveAmount = 35}
 };
 
 
 typedef struct Game {
+	// Map
+	Object** map;
+
 	// Constants
 	int difficulty;
 	int mapSize;
@@ -45,6 +48,16 @@ Game* new_Game(int difficulty, int score) {
 	_this->score = score;
 	_this->treasureX = 0;
 	_this->treasureY = 0;
+
+	_this->map = (Object**)malloc(sizeof(Object*) * difficultyCons[difficulty].mapSize);
+	for (int i = 0; i < difficultyCons[difficulty].mapSize; i++) {
+		(_this->map)[i] = (Object*)malloc(sizeof(Object) * difficultyCons[difficulty].mapSize);
+		for (int j = 0; j < difficultyCons[difficulty].mapSize; j++) {
+			(_this->map)[i][j].amount = 0;
+			(_this->map)[i][j].category = 0;
+			(_this->map)[i][j].isActive = 0;
+		}
+	}
 
 	return _this;
 }

@@ -50,7 +50,7 @@ int playGame();
 void gameClear();
 void gameOver();
 void initRank();
-int collisionCheck(Object** map, int dx, int dy);
+int collisionCheck();
 
 void sort(Score* arr, int size) {
 	int i, j;
