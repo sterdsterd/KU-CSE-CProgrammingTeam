@@ -35,21 +35,22 @@ const struct {
 	char DECREASE_MOVE;
 	char TREASURE;
 	char HINT;
-} CATEGORY = { 'W', '.', 'S', 's', 'M', 'm', 'T', 'H'};
+} CATEGORY = { 'W', '.', 'S', 's', 'M', 'm', 'T', 'H' };
 
 void initStory();
 int initLobby();
-void generateMaze(Game** game);
-void generateItem(Game** game, int amount, char category, int max);
-void initGame(Game** game);
+void generateMaze();
+void generateItem(int amount, char category, int max);
+void initGame();
+void destroyMap(int* mapSize);
 void initHelp();
-void printSight(Game** game);
-int playGame(Game** game);
-void gameClear(Game** game);
-void destroyMap(int mapSize);
-void gameOver(Game** game);
-void initRank(Game** game);
-int collisionCheck(Game** game, int dx, int dy);
+void printSight();
+void clearSight();
+int playGame();
+void gameClear();
+void gameOver();
+void initRank();
+int collisionCheck(Object** map, int dx, int dy);
 
 void sort(Score* arr, int size) {
 	int i, j;
