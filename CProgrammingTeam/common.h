@@ -42,6 +42,7 @@ int initLobby();
 void generateMaze();
 void generateItem(int amount, char category, int max);
 void initGame();
+void destroyMap(int* mapSize);
 void initHelp();
 void printSight();
 void clearSight();

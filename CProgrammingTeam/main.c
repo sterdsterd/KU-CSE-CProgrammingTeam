@@ -5,29 +5,28 @@
 #include "common.h"
 #include "console.h"
 
-Object** map = NULL;
-Score rank[10];
-int difficulty;
+// 난이도 조절
 const Difficulty difficultyCons[3] = {
 	// EASY
-	{.mapSize = 41, .sightSize = 11, .moveCount = 100, .minSight = 7, .maxSight = 19, .objectAmount = 15, .maxMoveAmount = 15},
+	{.mapSize = 41, .sightSize = 11, .moveCount = 150, .minSight = 7, .maxSight = 19, .objectAmount = 15, .maxMoveAmount = 15},
 	// NORMAL
-	{.mapSize = 71, .sightSize = 21, .moveCount = 150, .minSight = 13, .maxSight = 29, .objectAmount = 45, .maxMoveAmount = 25},
+	{.mapSize = 71, .sightSize = 21, .moveCount = 200, .minSight = 13, .maxSight = 29, .objectAmount = 45, .maxMoveAmount = 25},
 	// HARD
-	{.mapSize = 101, .sightSize = 37, .moveCount = 200, .minSight = 23, .maxSight = 37, .objectAmount = 100, .maxMoveAmount = 35}
+	{.mapSize = 101, .sightSize = 37, .moveCount = 250, .minSight = 23, .maxSight = 37, .objectAmount = 100, .maxMoveAmount = 35}
 };
-int charX, charY, mapSize, sightSize, moveCount, objectAmount;
-int consoleX = 100, consoleY = 50;
-int score = 0, rankSize = 0;
+
+Object** map = NULL;
+int difficulty;
+int charX, charY;
 int treasureX, treasureY;
+int score, moveCount;
 
 int main() {
+	int isClear = 0;
 	srand((unsigned int)time(NULL));
 	hideConsoleObjects();
-	setConsoleSize(consoleX, consoleY);
-	//printf("★●■♠♥♣◈▣▤▥▨▧▦▩"); _getch();
+	setConsoleSize(CONSOLE_X, CONSOLE_Y);
 	initStory();
-	int isClear = 0;
 	for (;;) {
 		if (!isClear) {
 			int k = initLobby();
@@ -47,10 +46,7 @@ int main() {
 			difficulty++;
 			score += 200;
 			// 맵 동적할당 해제
-			for (int i = 0; i < mapSize; i++) {
-				free(map[i]);
-			}
-			free(map);
+			destroyMap(&(difficultyCons[difficulty].mapSize));
 			isClear = 1;
 			cls();
 			printQuote("알림", "성배를 찾았습니다. 다음 레벨로 이동합니다.\n │ 계속하려면 아무 키나 누르세요.");
@@ -66,35 +62,35 @@ int main() {
 }
 
 void initStory() {
+	char* str[] = { "제 2차 세계대전에서 독일과 일본이 승리를 하게 되고",
+	"전 세계는 두 국가의 지배 아래에 놓이게 된다.",
+	"결국 전 세계의 모든 국가들은 한 독재자 아래에 놓여",
+	"하나의 커다란 독재국가인 '판엠'이 건국된다.",
+	"독재자는 판엠을 12개의 구역으로 나누어 관리하게 하는데",
+	"각 구역에서 시민반란이 일어나 판엠의 체제가 주춤하게 된다.",
+	"한 번의 거대한 시민 반란 이후 판엠은 시민들이 반란에 대한 경계심을 가질 수 있도록",
+	"1년에 한번씩 '헝거게임'이라는 생존게임을 개최하여 시민 반란을 사전에 방지하게 된다.",
+	"'헝거게임'의 룰을 간단하다.",
+	"1부터 12구역까지 각 구역마다 두명 씩 대표를 추첨으로 대표자를 선발한다.",
+	"각 대표자들은 출구를 알 수 없는 함정이 가득 설치된 미로에서",
+	"미로 어딘가에 숨겨져있는 성배를 찾아야 하고",
+	"성배를 가장 먼저 찾은 사람이 최종 우승자가 된다.",
+	"헝거게임에서는 살인이 허용되며",
+	"최종적으로 성배를 찾은 1인 이외의 나머지 참가자는 모두 죽게 된다.",
+	"제 5구역의 대표로 뽑힌 당신은 헝거게임에 참가하여 생존을 위해 광활한 미로 속을 거닐게 되는데...",
+	"과연 살아남을 수 있을까?" };
+
 	setTextColor(COLOR.GREY);
 	gotoxy((100 - strlen("스킵하려면 SPACE를 누르세요")) / 4, 1);
 	printf("스킵하려면 SPACE를 누르세요");
 
 	setTextColor(COLOR.WHITE);
 
-	char* str[] = { "제 2차 세계대전에서 독일과 일본이 승리를 하게 되고",
-		"전 세계는 두 국가의 지배 아래에 놓이게 된다.",
-		"결국 전 세계의 모든 국가들은 한 독재자 아래에 놓여",
-		"하나의 커다란 독재국가인 '판엠'이 건국된다.",
-		"독재자는 판엠을 12개의 구역으로 나누어 관리하게 하는데",
-		"각 구역에서 시민반란이 일어나 판엠의 체제가 주춤하게 된다.",
-		"한 번의 거대한 시민 반란 이후 판엠은 시민들이 반란에 대한 경계심을 가질 수 있도록",
-		"1년에 한번씩 '헝거게임'이라는 생존게임을 개최하여 시민 반란을 사전에 방지하게 된다.",
-		"'헝거게임'의 룰을 간단하다.",
-		"1부터 12구역까지 각 구역마다 두명 씩 대표를 추첨으로 대표자를 선발한다.",
-		"각 대표자들은 출구를 알 수 없는 함정이 가득 설치된 미로에서",
-		"미로 어딘가에 숨겨져있는 성배를 찾아야 하고",
-		"성배를 가장 먼저 찾은 사람이 최종 우승자가 된다.",
-		"헝거게임에서는 살인이 허용되며",
-		"최종적으로 성배를 찾은 1인 이외의 나머지 참가자는 모두 죽게 된다.",
-		"제 5구역의 대표로 뽑힌 당신은 헝거게임에 참가하여 생존을 위해 광활한 미로 속을 거닐게 되는데...",
-		"과연 살아남을 수 있을까?" };
-
 	// 한 글자씩 출력
 	// 스페이스 입력 시 남은 스트링 한 번에 출력
 	for (int j = 0; j < sizeof(str) / sizeof(char*); j++) {
-		gotoxy((100 - strlen(str[j])) / 4, 5 + j * 2);
 		int i;
+		gotoxy((100 - strlen(str[j])) / 4, 5 + j * 2);
 		for (i = 0; i < strlen(str[j]); i++) {
 			if (_kbhit() && _getch() == ' ') {
 				break;
@@ -110,10 +106,8 @@ void initStory() {
 	}
 
 	setTextColor(COLOR.GREY);
-
-	char con[] = " 계속하려면 아무 키나 누르세요";
-	gotoxy((100 - strlen(con)) / 4, 7 + sizeof(str) / sizeof(char*) * 2);
-	printf("%s", con);
+	gotoxy((100 - strlen(" 계속하려면 아무 키나 누르세요")) / 4, 7 + sizeof(str) / sizeof(char*) * 2);
+	printf("%s", " 계속하려면 아무 키나 누르세요");
 	_getch();
 }
 
@@ -134,22 +128,24 @@ int initLobby() {
 	printString(13, 14, "            ____) | |_| | |   \\ V /| |\\ V /  __/");
 	printString(13, 15, "           |_____/ \\__,_|_|    \\_/ |_| \\_/ \\___|"); 
 	setTextColor(COLOR.RED);
+	printString(17, 19, ">");
+	printString(32, 19, "<");
 	printString(18, 18, "┏━━━━━━━━━━━━━━━━━━━━━━━━━┓");
-	printString(17, 19, "> ┃                         ┃ <");
+	printString(18, 19, "┃                         ┃");
 	printString(18, 20, "┗━━━━━━━━━━━━━━━━━━━━━━━━━┛");
 	setTextColor(COLOR.GREY);
-	printString(19, 19, "EASY");
+	printString(23, 19, " EASY");
 	printString(18, 22, "┌─────────────────────────┐");
-	printString(18, 23, "│ NORMAL                  │");
+	printString(18, 23, "│         NORMAL          │");
 	printString(18, 24, "└─────────────────────────┘");
 	printString(18, 26, "┌─────────────────────────┐");
-	printString(18, 27, "│ HARD                    │");
+	printString(18, 27, "│          HARD           │");
 	printString(18, 28, "└─────────────────────────┘");
 	printString(18, 30, "┌─────────────────────────┐");
-	printString(18, 31, "│ 도움말                  │");
+	printString(18, 31, "│         도움말          │");
 	printString(18, 32, "└─────────────────────────┘");
 	printString(18, 34, "┌─────────────────────────┐");
-	printString(18, 35, "│ 종료                    │");
+	printString(18, 35, "│          종료           │");
 	printString(18, 36, "└─────────────────────────┘");
 	printString(18, 38, " ↑/↓, ENTER 키로 메뉴 선택");
 	while (1) {
@@ -194,9 +190,10 @@ int initLobby() {
 }
 
 void generateMaze() {
-
-	for (int y = 0; y < mapSize; y++) {
-		for (int x = 0; x < mapSize; x++) {
+	int x, y;
+	int mapSize = difficultyCons[difficulty].mapSize;
+	for (y = 0; y < mapSize; y++) {
+		for (x = 0; x < mapSize; x++) {
 			if (x % 2 == 0 || y % 2 == 0)
 				map[x][y].category = CATEGORY.WALL;
 			else
@@ -204,7 +201,7 @@ void generateMaze() {
 		}
 	}
 
-	for (int y = 0; y < mapSize; y++) {
+	for (y = 0; y < mapSize; y++) {
 		int count = 1;
 		for (int x = 0; x < mapSize; x++) {
 			if (x % 2 == 0 || y % 2 == 0)
@@ -236,7 +233,9 @@ void generateMaze() {
 }
 
 void generateItem(int amount, char category, int max) {
-	for (int i = 0; i < amount; i++) {
+	int i;
+	int mapSize = difficultyCons[difficulty].mapSize;
+	for (i = 0; i < amount; i++) {
 		int x = rand() % (mapSize - 2) + 1;
 		int y = rand() % (mapSize - 2) + 1;
 		if (map[x][y].category != CATEGORY.BLANK) {
@@ -254,12 +253,12 @@ void generateItem(int amount, char category, int max) {
 }
 
 void initGame() {
-
-	mapSize = difficultyCons[difficulty].mapSize;
-	sightSize = difficultyCons[difficulty].sightSize;
-	moveCount = difficultyCons[difficulty].moveCount;
-	objectAmount = difficultyCons[difficulty].objectAmount;
 	int maxMoveAmount = difficultyCons[difficulty].maxMoveAmount;
+	int mapSize = difficultyCons[difficulty].mapSize;
+	int sightSize = difficultyCons[difficulty].sightSize;
+	int objectAmount = difficultyCons[difficulty].objectAmount;
+
+	moveCount = difficultyCons[difficulty].moveCount;
 
 	// 캐릭터의 x, y값 -> 맵 정중앙
 	charX = mapSize / 2;
@@ -317,6 +316,7 @@ int playGame() {
 }
 
 int collisionCheck(Object** map, int dx, int dy) {
+	int sightSize = difficultyCons[difficulty].sightSize;
 	char category = map[charX + dx][charY + dy].category;
 	int amount = map[charX + dx][charY + dy].amount;
 
@@ -403,12 +403,15 @@ int collisionCheck(Object** map, int dx, int dy) {
 }
 
 void printSight() {
+	int sightSize = difficultyCons[difficulty].sightSize;
+	int mapSize = difficultyCons[difficulty].mapSize;
+
 	gotoxy(0, 0);
 	printf("난이도: %s", difficulty == 0 ? "EASY" : difficulty == 1 ? "NORMAL" : "HARD");
 	gotoxy(0, 1);
 	printf("체  력: %d  ", moveCount);
 	// startX, startY = 맵 프린트 시작 위치
-	int startX = (consoleX / 2 - sightSize) / 2, startY = (consoleY - sightSize) / 2;
+	int startX = (CONSOLE_X / 2 - sightSize) / 2, startY = (CONSOLE_Y - sightSize) / 2;
 	gotoxy(startX - 1, startY - 1);
 	for (int y = charY - sightSize / 2 - 1, i = 0; y <= charY + sightSize / 2 + 1; y++, i++) {
 		for (int x = charX - sightSize / 2 - 1; x <= charX + sightSize / 2 + 1; x++) {
@@ -431,7 +434,7 @@ void printSight() {
 			// 플레이어 표시
 			else if (x == charX && y == charY) {
 				setTextColor(COLOR.RED);
-				printf("♥ ");
+				printf("♥");
 				setTextColor(COLOR.GREY);
 			}
 			// 맵 안 오브젝트 표시
@@ -446,7 +449,8 @@ void printSight() {
 }
 
 void clearSight() {
-	int startX = (consoleX / 2 - sightSize) / 2, startY = (consoleY - sightSize) / 2;
+	int sightSize = difficultyCons[difficulty].sightSize;
+	int startX = (CONSOLE_X / 2 - sightSize) / 2, startY = (CONSOLE_Y - sightSize) / 2;
 	gotoxy(startX - 1, startY - 1);
 	for (int y = charY - sightSize / 2 - 1, i = 0; y <= charY + sightSize / 2 + 3; y++, i++) {
 		for (int x = charX - sightSize / 2 - 1; x <= charX + sightSize / 2 + 1; x++) {
@@ -457,6 +461,9 @@ void clearSight() {
 }
 
 void initRank() {
+	static Score rank[10];
+	static int rankSize = 0;
+
 	gotoxy(10, 20);
 	printf("SCORE: %5d", score);
 
@@ -493,11 +500,8 @@ void initRank() {
 
 void gameClear() {
 	cls();
-	
-	for (int i = 0; i < mapSize; i++) {
-		free(map[i]);
-	}
-	free(map);
+
+	destroyMap(&(difficultyCons[difficulty].mapSize));
 
 	printString(15, 10, "          _ _    _____ _                 ");
 	printString(15, 11, "    /\\   | | |  / ____| |                ");
@@ -513,13 +517,15 @@ void gameClear() {
                                 
 }
 
-void gameOver() {
-
-	// 동적할당 해제
+// 동적할당 해제
+void destroyMap(int* mapSize) {
 	for (int i = 0; i < mapSize; i++) {
 		free(map[i]);
 	}
 	free(map);
+}
+
+void gameOver() {
 
 	cls();
 	

@@ -1,4 +1,6 @@
 #include <Windows.h>
+#define CONSOLE_X 100
+#define CONSOLE_Y 50
 
 void gotoxy(int x, int y) {
 	COORD Cur = {x * 2, y};
