@@ -39,18 +39,17 @@ const struct {
 
 void initStory();
 int initLobby();
-void generateMaze();
-void generateItem(int amount, char category, int max);
-void initGame();
-void destroyMap(int* mapSize);
+void generateMaze(Game** game);
+void generateItem(Game** game, int amount, char category, int max);
+void initGame(Game** game);
 void initHelp();
-void printSight();
-void clearSight();
-int playGame();
-void gameClear();
-void gameOver();
-void initRank();
-int collisionCheck(Object** map, int dx, int dy);
+void printSight(Game** game);
+int playGame(Game** game);
+void gameClear(Game** game);
+void destroyMap(int mapSize);
+void gameOver(Game** game);
+void initRank(Game** game);
+int collisionCheck(Game** game, int dx, int dy);
 
 void sort(Score* arr, int size) {
 	int i, j;
