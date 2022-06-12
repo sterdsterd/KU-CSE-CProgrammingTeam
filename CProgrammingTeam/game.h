@@ -4,11 +4,11 @@
 // 난이도 조절
 const Difficulty difficultyCons[3] = {
 	// EASY
-	{.mapSize = 41, .sightSize = 11, .moveCount = 150, .minSight = 7, .maxSight = 19, .objectAmount = 15, .maxMoveAmount = 15},
+	{.mapSize = 15, .sightSize = 9, .moveCount = 80, .minSight = 5, .maxSight = 15, .objectAmount = 4, .maxMoveAmount = 5},
 	// NORMAL
-	{.mapSize = 71, .sightSize = 21, .moveCount = 200, .minSight = 13, .maxSight = 29, .objectAmount = 45, .maxMoveAmount = 25},
+	{.mapSize = 25, .sightSize = 9, .moveCount = 200, .minSight = 13, .maxSight = 17, .objectAmount = 6, .maxMoveAmount = 15},
 	// HARD
-	{.mapSize = 101, .sightSize = 31, .moveCount = 250, .minSight = 23, .maxSight = 37, .objectAmount = 100, .maxMoveAmount = 35}
+	{.mapSize = 35, .sightSize = 21, .moveCount = 250, .minSight = 15, .maxSight = 27, .objectAmount = 8, .maxMoveAmount = 35}
 };
 
 
@@ -50,13 +50,15 @@ Game* new_Game(int difficulty, int score) {
 	_this->treasureY = 0;
 
 	_this->map = (Object**)malloc(sizeof(Object*) * difficultyCons[difficulty].mapSize);
+	(_this->map)[0] = (Object*)malloc(sizeof(Object) * difficultyCons[difficulty].mapSize * difficultyCons[difficulty].mapSize);
 	for (int i = 0; i < difficultyCons[difficulty].mapSize; i++) {
-		(_this->map)[i] = (Object*)malloc(sizeof(Object) * difficultyCons[difficulty].mapSize);
+		if (i > 0)(_this->map)[i] = (_this->map)[i - 1] + difficultyCons[difficulty].mapSize;
 		for (int j = 0; j < difficultyCons[difficulty].mapSize; j++) {
 			(_this->map)[i][j].amount = 0;
 			(_this->map)[i][j].category = 0;
 			(_this->map)[i][j].isActive = 0;
 		}
+
 	}
 
 	return _this;

@@ -476,14 +476,14 @@ void gameClear(Game** game) {
 
 // 동적할당 해제
 void destroyMap(Game** game, int mapSize) {
-	for (int i = 0; i < mapSize; i++) {
-		free(((*game)->map)[i]);
-	}
+	free(((*game)->map)[0]);
 	free(((*game)->map));
 }
 
 void gameOver(Game** game) {
 	cls();
+
+	destroyMap(game, (*game)->mapSize);
 	
 	printString(11, 10, "  _____                         ____");
 	printString(11, 11, " / ____|                       / __ \\");
