@@ -314,6 +314,8 @@ int playGame(Game** game) {
 						(*game)->monster.x += mDx;
 						(*game)->monster.y += mDy;
 						((*game)->map)[((*game)->monster.x)][((*game)->monster.y)].category = CATEGORY.MONSTER;
+						int c = collisionCheck(game, 0, 0);
+						if (c == 1) return c;
 					}
 					else continue;
 				}

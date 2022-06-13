@@ -10,7 +10,6 @@ const Difficulty difficultyCons[3] = {
 	// HARD
 	{.mapSize = 35, .sightSize = 21, .moveCount = 250, .minSight = 15, .maxSight = 27, .objectAmount = 8, .maxMoveAmount = 35}
 };
-
 typedef struct Game {
 	// Map
 	Object** map;
