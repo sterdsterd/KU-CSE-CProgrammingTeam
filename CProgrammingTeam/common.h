@@ -65,3 +65,17 @@ void sort(Score* arr, int size) {
 		arr[j + 1] = key;
 	}
 }
+
+int gcd(int num1, int num2) {
+	if (num2 == 0) return num1;
+	else return gcd(num2, num1 % num2);
+}
+
+int lcm(int a[]) {
+	int ref = 1;
+	for (int i = 0; i < 4; i++) {
+		if (a[i] == 0)continue;
+		ref = ref*a[i]/gcd(ref, a[i]);
+	}
+	return ref;
+}

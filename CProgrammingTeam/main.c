@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <Windows.h>
 #include "common.h"
 #include "console.h"
 #include "game.h"
@@ -210,10 +211,11 @@ void generateMaze(Game** game) {
 			if (rand() % 2 == 0) {
 				((*game)->map)[x + 1][y].category = CATEGORY.BLANK;
 				count++;
-			} else {
-				int randomIndex = rand() % count;
-				((*game)->map)[x - randomIndex * 2][y + 1].category = CATEGORY.BLANK;
-				count = 1;
+			}
+			 else {
+			 int randomIndex = rand() % count;
+			 ((*game)->map)[x - randomIndex * 2][y + 1].category = CATEGORY.BLANK;
+			 count = 1;
 			}
 		}
 	}
@@ -235,7 +237,8 @@ void generateItem(Game** game, int amount, char category, int max) {
 		if (((*game)->map)[x][y].category == CATEGORY.TREASURE) {
 			(*game)->treasure.x = x;
 			(*game)->treasure.y = y;
-		} else if (((*game)->map)[x][y].category == CATEGORY.MONSTER) {
+		}
+		else if (((*game)->map)[x][y].category == CATEGORY.MONSTER) {
 			(*game)->monster.x = x;
 			(*game)->monster.y = y;
 		}
@@ -268,7 +271,6 @@ void initGame(Game** game) {
 int playGame(Game** game) {
 	cls();
 	printSight(game);
-
 	char ch = 0;
 	clock_t start = clock(), end;
 	for (;;) {
@@ -295,28 +297,46 @@ int playGame(Game** game) {
 				if (ch == 'w' || ch == 'a' || ch == 's' || ch == 'd') {
 					int k = rand() % 4;
 					int mDx = 0, mDy = 0;
-					switch (k) {
-					case 0:
-						mDx--;
-						break;
-					case 1:
-						mDx++;
-						break;
-					case 2:
-						mDy--;
-						break;
-					case 3:
-						mDy++;
-						break;
+					int dx[] = { -1,0,0,1 };
+					int dy[] = { 0,-1,1,0 };
+					int v[4];
+					int sum = 0;
+					int check = 0;
+					for (int j = 0; j < 4; j++) {
+						if (((*game)->map)[(*game)->monster.x+dx[j]][(*game)->monster.y+dy[j]].category == CATEGORY.WALL) {
+							v[j] = 0;
+						}
+						else {
+							v[j] = ((*game)->monster.visitedCount)[(*game)->monster.x + dx[j]][(*game)->monster.y + dy[j]];
+							check = 1;
+						}
 					}
-					if (((*game)->map)[((*game)->monster.x) + mDx][((*game)->monster.y) + mDy].category != CATEGORY.WALL) {
-						((*game)->map)[(*game)->monster.x][(*game)->monster.y].category = CATEGORY.BLANK;
-						(*game)->monster.x += mDx;
-						(*game)->monster.y += mDy;
-						((*game)->map)[((*game)->monster.x)][((*game)->monster.y)].category = CATEGORY.MONSTER;
-						int c = collisionCheck(game, 0, 0);
-						if (c == 1) return c;
+					int lcmResult = lcm(v);
+					for (int j = 0; j < 4; j++) {
+						if (v[j] == 0)continue;
+						v[j] = lcmResult / v[j];
+						
+						sum += v[j];
+						if (j > 0) v[j] += v[j - 1];
 					}
+
+					int r = rand() % sum;
+					for (int j = 0; j < 4; j++) {
+						if (r < v[j]) {
+							mDx = dx[j];
+							mDy = dy[j];
+							break;
+						}
+					}
+					((*game)->map)[(*game)->monster.x][(*game)->monster.y].category = CATEGORY.BLANK;
+					(*game)->monster.x += mDx;
+					(*game)->monster.y += mDy;
+					((*game)->map)[((*game)->monster.x)][((*game)->monster.y)].category = CATEGORY.MONSTER;
+					(*game)->monster.visitedCount[((*game)->monster.x)][((*game)->monster.y)]++;
+
+					int c = collisionCheck(game, 0, 0);
+					if (c == 1) return c;
+					
 					else continue;
 				}
 			}

@@ -10,6 +10,12 @@ const Difficulty difficultyCons[3] = {
 	// HARD
 	{.mapSize = 35, .sightSize = 21, .moveCount = 250, .minSight = 15, .maxSight = 27, .objectAmount = 8, .maxMoveAmount = 35}
 };
+
+typedef struct Monster {
+	int** visitedCount;
+	int x, y;
+} Monster;
+
 typedef struct Game {
 	// Map
 	Object** map;
@@ -26,7 +32,7 @@ typedef struct Game {
 	int sightSize;
 	Coord character;
 	Coord treasure;
-	Coord monster;
+	Monster monster;
 
 } Game;
 
@@ -50,17 +56,25 @@ Game* new_Game(int difficulty, int score) {
 	_this->monster.x = 0;
 	_this->monster.y = 0;
 
+	_this->monster.visitedCount = (int**)malloc(sizeof(int*) * difficultyCons[difficulty].mapSize);
+	(_this->monster.visitedCount)[0] = (int*)malloc(sizeof(int) * difficultyCons[difficulty].mapSize * difficultyCons[difficulty].mapSize);
+
 	_this->map = (Object**)malloc(sizeof(Object*) * difficultyCons[difficulty].mapSize);
 	(_this->map)[0] = (Object*)malloc(sizeof(Object) * difficultyCons[difficulty].mapSize * difficultyCons[difficulty].mapSize);
+
 	for (int i = 0; i < difficultyCons[difficulty].mapSize; i++) {
-		if (i > 0)
+		if (i > 0) {
 			(_this->map)[i] = (_this->map)[i - 1] + difficultyCons[difficulty].mapSize;
+			(_this->monster.visitedCount)[i] = (_this->monster.visitedCount)[i - 1] + difficultyCons[difficulty].mapSize;
+		}
 		for (int j = 0; j < difficultyCons[difficulty].mapSize; j++) {
 			(_this->map)[i][j].amount = 0;
 			(_this->map)[i][j].category = 0;
+
+			(_this->monster.visitedCount)[i][j] = 1;
 		}
 
 	}
-
+	(_this->monster.visitedCount)[0][0] = 2;
 	return _this;
 }
