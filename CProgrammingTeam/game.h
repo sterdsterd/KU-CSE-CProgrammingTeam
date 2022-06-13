@@ -75,6 +75,6 @@ Game* new_Game(int difficulty, int score) {
 		}
 
 	}
-	(_this->monster.visitedCount)[0][0] = 2;
+
 	return _this;
 }

@@ -541,6 +541,9 @@ void gameClear(Game** game) {
 void destroyMap(Game** game, int mapSize) {
 	free(((*game)->map)[0]);
 	free(((*game)->map));
+
+	free(((*game)->monster.visitedCount)[0]);
+	free((*game)->monster.visitedCount);
 }
 
 void gameOver(Game** game) {
