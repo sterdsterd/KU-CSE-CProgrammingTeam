@@ -34,7 +34,8 @@ const struct {
 	char DECREASE_MOVE;
 	char TREASURE;
 	char HINT;
-} CATEGORY = { 'W', '.', 'S', 's', 'M', 'm', 'T', 'H' };
+	char MONSTER;
+} CATEGORY = { 'W', '.', 'S', 's', 'M', 'm', 'T', 'H', 'K'};
 
 void initStory();
 int initLobby();

@@ -4,13 +4,12 @@
 // 난이도 조절
 const Difficulty difficultyCons[3] = {
 	// EASY
-	{.mapSize = 15, .sightSize = 9, .moveCount = 80, .minSight = 5, .maxSight = 15, .objectAmount = 4, .maxMoveAmount = 5},
+	{.mapSize = 15, .sightSize = 30, .moveCount = 80, .minSight = 5, .maxSight = 15, .objectAmount = 4, .maxMoveAmount = 5},
 	// NORMAL
 	{.mapSize = 25, .sightSize = 9, .moveCount = 200, .minSight = 13, .maxSight = 17, .objectAmount = 6, .maxMoveAmount = 15},
 	// HARD
 	{.mapSize = 35, .sightSize = 21, .moveCount = 250, .minSight = 15, .maxSight = 27, .objectAmount = 8, .maxMoveAmount = 35}
 };
-
 
 typedef struct Game {
 	// Map
@@ -26,8 +25,9 @@ typedef struct Game {
 	// Variables
 	int score, moveCount;
 	int sightSize;
-	int charX, charY;
-	int treasureX, treasureY;
+	Coord character;
+	Coord treasure;
+	Coord monster;
 
 } Game;
 
@@ -43,11 +43,13 @@ Game* new_Game(int difficulty, int score) {
 
 	_this->sightSize = difficultyCons[difficulty].sightSize;
 	_this->moveCount = difficultyCons[difficulty].moveCount;
-	_this->charX = difficultyCons[difficulty].mapSize / 2;
-	_this->charY = difficultyCons[difficulty].mapSize / 2;
 	_this->score = score;
-	_this->treasureX = 0;
-	_this->treasureY = 0;
+	_this->character.x = 0;
+	_this->character.y = 0;
+	_this->treasure.x = 0;
+	_this->treasure.y = 0;
+	_this->monster.x = 0;
+	_this->monster.y = 0;
 
 	_this->map = (Object**)malloc(sizeof(Object*) * difficultyCons[difficulty].mapSize);
 	(_this->map)[0] = (Object*)malloc(sizeof(Object) * difficultyCons[difficulty].mapSize * difficultyCons[difficulty].mapSize);

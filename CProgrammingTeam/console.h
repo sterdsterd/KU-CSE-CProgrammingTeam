@@ -31,8 +31,8 @@ void setConsoleSize(int x, int y) {
 15 = ÁøÇÑ Èò»ö
 */
 const struct {
-	char BLACK, GREEN, RED, YELLOW, GREY, DARK_GREY, WHITE;
-} COLOR = {0, 2, 4, 6, 7, 8, 15};
+	char BLACK, GREEN, RED, MAGENTA, YELLOW, GREY, DARK_GREY, WHITE;
+} COLOR = {0, 2, 4, 5, 6, 7, 8, 15};
 
 void setTextColor(int code) {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), code);
@@ -89,10 +89,14 @@ void categoryToChar(char c) {
 		setTextColor(COLOR.DARK_GREY);
 		printf("¡á");
 		setTextColor(COLOR.GREY);
-	}
-	else {
+	} else if (c == CATEGORY.MONSTER) {
+		setTextColor(COLOR.MAGENTA);
+		printf("¢¾");
+		setTextColor(COLOR.GREY);
+	} else {
 		setTextColor(COLOR.YELLOW);
 		printf("¡Ú");
+		// DEBUG
 		//printf("%c ", c);
 		setTextColor(COLOR.GREY);
 	}
