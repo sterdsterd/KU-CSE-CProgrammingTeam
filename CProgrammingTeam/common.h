@@ -6,7 +6,6 @@ typedef struct Coord {
 } Coord;
 
 typedef struct Object {
-	int isActive;
 	char category;
 	int amount;
 } Object;

@@ -228,7 +228,6 @@ void generateItem(Game** game, int amount, char category, int max) {
 			continue;
 		}
 		((*game)->map)[x][y].category = category;
-		((*game)->map)[x][y].isActive = 1;
 		((*game)->map)[x][y].amount = rand() % max + 1;
 		if (((*game)->map)[x][y].category == CATEGORY.INCREASE_MOVE && ((*game)->map)[x][y].amount < 10)
 			((*game)->map)[x][y].amount = 10;

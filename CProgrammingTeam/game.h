@@ -52,11 +52,11 @@ Game* new_Game(int difficulty, int score) {
 	_this->map = (Object**)malloc(sizeof(Object*) * difficultyCons[difficulty].mapSize);
 	(_this->map)[0] = (Object*)malloc(sizeof(Object) * difficultyCons[difficulty].mapSize * difficultyCons[difficulty].mapSize);
 	for (int i = 0; i < difficultyCons[difficulty].mapSize; i++) {
-		if (i > 0)(_this->map)[i] = (_this->map)[i - 1] + difficultyCons[difficulty].mapSize;
+		if (i > 0)
+			(_this->map)[i] = (_this->map)[i - 1] + difficultyCons[difficulty].mapSize;
 		for (int j = 0; j < difficultyCons[difficulty].mapSize; j++) {
 			(_this->map)[i][j].amount = 0;
 			(_this->map)[i][j].category = 0;
-			(_this->map)[i][j].isActive = 0;
 		}
 
 	}
