@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <conio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "common.h"
 #include "console.h"
 #include "game.h"
@@ -146,7 +147,7 @@ int initLobby() {
 			printString(17, 19 + 4 * diff, " ");
 			printString(32, 19 + 4 * diff, " ");
 			printString(18, 18 + 4 * diff, "┌─────────────────────────┐");
-			printString(18, 19 + 4 * diff, "│");
+			printString(18, 19 + 4 * diff, "│ ");
 			printString(31, 19 + 4 * diff, "│");
 			printString(18, 20 + 4 * diff, "└─────────────────────────┘");
 			key = _getch();
@@ -228,13 +229,15 @@ void generateItem(Game** game, int amount, char category, int max) {
 			continue;
 		}
 		((*game)->map)[x][y].category = category;
-		((*game)->map)[x][y].isActive = 1;
 		((*game)->map)[x][y].amount = rand() % max + 1;
 		if (((*game)->map)[x][y].category == CATEGORY.INCREASE_MOVE && ((*game)->map)[x][y].amount < 10)
 			((*game)->map)[x][y].amount = 10;
 		if (((*game)->map)[x][y].category == CATEGORY.TREASURE) {
-			(*game)->treasureX = x;
-			(*game)->treasureY = y;
+			(*game)->treasure.x = x;
+			(*game)->treasure.y = y;
+		} else if (((*game)->map)[x][y].category == CATEGORY.MONSTER) {
+			(*game)->monster.x = x;
+			(*game)->monster.y = y;
 		}
 	}
 }
@@ -248,6 +251,7 @@ void initGame(Game** game) {
 	generateItem(game, (*game)->objectAmount, CATEGORY.DECREASE_SIGHT, 2);
 	generateItem(game, (*game)->objectAmount, CATEGORY.HINT, 1);
 	generateItem(game, 1, CATEGORY.TREASURE, 1);
+	generateItem(game, 1, CATEGORY.MONSTER, 1);
 
 	for (int i = 0; i < 1; i++) {
 		int x = rand() % ((*game)->mapSize - 2) + 1;
@@ -256,8 +260,8 @@ void initGame(Game** game) {
 			i--;
 			continue;
 		}
-		(*game)->charX = x;
-		(*game)->charY = y;
+		(*game)->character.x = x;
+		(*game)->character.y = y;
 	}
 }
 
@@ -265,32 +269,69 @@ int playGame(Game** game) {
 	cls();
 	printSight(game);
 
-	char ch;
+	char ch = 0;
+	clock_t start = clock(), end;
 	for (;;) {
-		ch = _getch();
-		int dx = 0, dy = 0;
+		if (_kbhit()) {
+			ch = _getch();
+			int dx = 0, dy = 0;
+			if (ch == 'w') dy--;
+			else if (ch == 'a') dx--;
+			else if (ch == 's') dy++;
+			else if (ch == 'd') dx++;
+			else continue;
 
-		if (ch == 'w') dy--;
-		else if (ch == 'a') dx--;
-		else if (ch == 's') dy++;
-		else if (ch == 'd') dx++;
-		else continue;
+			// 충돌 체크
+			int c = collisionCheck(game, dx, dy);
+			if (c == -1) continue;
+			else if (c) return c;
 
-		// 충돌 체크
-		int c = collisionCheck(game, dx, dy);
-		if (c == -1) continue;
-		else if (c) return c;
-
-		printSight(game);
+			printSight(game);
+		}
+		
+		if ((end = clock()) - start > 100) {
+			start = clock();
+			for (int i = 0; i < 1; i++) {
+				if (ch == 'w' || ch == 'a' || ch == 's' || ch == 'd') {
+					int k = rand() % 4;
+					int mDx = 0, mDy = 0;
+					switch (k) {
+					case 0:
+						mDx--;
+						break;
+					case 1:
+						mDx++;
+						break;
+					case 2:
+						mDy--;
+						break;
+					case 3:
+						mDy++;
+						break;
+					}
+					if (((*game)->map)[((*game)->monster.x) + mDx][((*game)->monster.y) + mDy].category != CATEGORY.WALL) {
+						((*game)->map)[(*game)->monster.x][(*game)->monster.y].category = CATEGORY.BLANK;
+						(*game)->monster.x += mDx;
+						(*game)->monster.y += mDy;
+						((*game)->map)[((*game)->monster.x)][((*game)->monster.y)].category = CATEGORY.MONSTER;
+					}
+					else continue;
+				}
+			}
+			printSight(game);
+		}
 	}
 }
 
 int collisionCheck(Game** game, int dx, int dy) {
-	char category = ((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category;
-	int amount = ((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].amount;
+	char category = ((*game)->map)[(*game)->character.x + dx][(*game)->character.y + dy].category;
+	int amount = ((*game)->map)[(*game)->character.x + dx][(*game)->character.y + dy].amount;
 
 	if (category == CATEGORY.WALL) {
 		return -1;
+
+	} else if (category == CATEGORY.MONSTER) {
+		return 1;
 
 	} else if (category == CATEGORY.TREASURE) {
 		return 2;
@@ -305,7 +346,7 @@ int collisionCheck(Game** game, int dx, int dy) {
 		printf("%d만큼 증가", amount * 2);
 		setTextColor(COLOR.GREY);
 		printf("합니다!");
-		((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
+		((*game)->map)[(*game)->character.x + dx][(*game)->character.y + dy].category = CATEGORY.BLANK;
 
 	} else if (category == CATEGORY.DECREASE_SIGHT) {
 		cls();
@@ -318,7 +359,7 @@ int collisionCheck(Game** game, int dx, int dy) {
 		printf("%d만큼 감소", amount * 2);
 		setTextColor(COLOR.GREY);
 		printf("합니다.");
-		((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
+		((*game)->map)[(*game)->character.x + dx][(*game)->character.y + dy].category = CATEGORY.BLANK;
 
 	} else if (category == CATEGORY.INCREASE_MOVE) {
 		system("color 20");
@@ -331,7 +372,7 @@ int collisionCheck(Game** game, int dx, int dy) {
 		printf("%d만큼 증가", amount);
 		setTextColor(COLOR.GREY);
 		printf("합니다!");
-		((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
+		((*game)->map)[(*game)->character.x + dx][(*game)->character.y + dy].category = CATEGORY.BLANK;
 		(*game)->moveCount += amount;
 
 	} else if (category == CATEGORY.DECREASE_MOVE) {
@@ -345,25 +386,25 @@ int collisionCheck(Game** game, int dx, int dy) {
 		printf("%d만큼 감소", amount);
 		setTextColor(COLOR.GREY);
 		printf("합니다.");
-		((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
+		((*game)->map)[(*game)->character.x + dx][(*game)->character.y + dy].category = CATEGORY.BLANK;
 		(*game)->moveCount -= amount;
 
 	} else if (category == CATEGORY.HINT) {
 		if (rand() % 2) {
 			printQuote("힌트 발견", "");
-			printf("성배의 x좌표는 %d 입니다.", (*game)->treasureX);
-			((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
+			printf("성배의 x좌표는 %d 입니다.", (*game)->treasure.x);
+			((*game)->map)[(*game)->character.x + dx][(*game)->character.y + dy].category = CATEGORY.BLANK;
 
 		} else {
 			printQuote("힌트 발견", "");
-			printf("성배의 y좌표는 %d 입니다.", (*game)->treasureY);
-			((*game)->map)[(*game)->charX + dx][(*game)->charY + dy].category = CATEGORY.BLANK;
+			printf("성배의 y좌표는 %d 입니다.", (*game)->treasure.y);
+			((*game)->map)[(*game)->character.x + dx][(*game)->character.y + dy].category = CATEGORY.BLANK;
 			
 		}
 	}
 
-	(*game)->charX += dx;
-	(*game)->charY += dy;
+	(*game)->character.x += dx;
+	(*game)->character.y += dy;
 	(*game)->score++;
 	// 이동횟수 감소 및 없으면 게임 오버
 	if (--((*game)->moveCount) < 0) return 1;
@@ -381,26 +422,26 @@ void printSight(Game** game) {
 	int startX = (CONSOLE_X / 2 - (*game)->sightSize) / 2, startY = (CONSOLE_Y - (*game)->sightSize) / 2;
 	gotoxy(startX - 1, startY - 1);
 
-	for (int y = (*game)->charY - (*game)->sightSize / 2 - 1, i = 0; y <= (*game)->charY + (*game)->sightSize / 2 + 1; y++, i++) {
-		for (int x = (*game)->charX - (*game)->sightSize / 2 - 1; x <= (*game)->charX + (*game)->sightSize / 2 + 1; x++) {
+	for (int y = (*game)->character.y - (*game)->sightSize / 2 - 1, i = 0; y <= (*game)->character.y + (*game)->sightSize / 2 + 1; y++, i++) {
+		for (int x = (*game)->character.x - (*game)->sightSize / 2 - 1; x <= (*game)->character.x + (*game)->sightSize / 2 + 1; x++) {
 			// 시야 테두리 표시
-			if (x == (*game)->charX - (*game)->sightSize / 2 - 1 && y == (*game)->charY - (*game)->sightSize / 2 - 1)
+			if (x == (*game)->character.x - (*game)->sightSize / 2 - 1 && y == (*game)->character.y - (*game)->sightSize / 2 - 1)
 				printf("┏");
-			else if (x == (*game)->charX + (*game)->sightSize / 2 + 1 && y == (*game)->charY - (*game)->sightSize / 2 - 1)
+			else if (x == (*game)->character.x + (*game)->sightSize / 2 + 1 && y == (*game)->character.y - (*game)->sightSize / 2 - 1)
 				printf("┓");
-			else if (x == (*game)->charX - (*game)->sightSize / 2 - 1 && y == (*game)->charY + (*game)->sightSize / 2 + 1)
+			else if (x == (*game)->character.x - (*game)->sightSize / 2 - 1 && y == (*game)->character.y + (*game)->sightSize / 2 + 1)
 				printf("┗");
-			else if (x == (*game)->charX + (*game)->sightSize / 2 + 1 && y == (*game)->charY + (*game)->sightSize / 2 + 1)
+			else if (x == (*game)->character.x + (*game)->sightSize / 2 + 1 && y == (*game)->character.y + (*game)->sightSize / 2 + 1)
 				printf("┛");
-			else if (x == (*game)->charX - (*game)->sightSize / 2 - 1 || x == (*game)->charX + (*game)->sightSize / 2 + 1)
+			else if (x == (*game)->character.x - (*game)->sightSize / 2 - 1 || x == (*game)->character.x + (*game)->sightSize / 2 + 1)
 				printf("┃");
-			else if (y == (*game)->charY - (*game)->sightSize / 2 - 1 || y == (*game)->charY + (*game)->sightSize / 2 + 1)
+			else if (y == (*game)->character.y - (*game)->sightSize / 2 - 1 || y == (*game)->character.y + (*game)->sightSize / 2 + 1)
 				printf("━━");
 			// 맵 밖 표시
 			else if (x < 0 || x > (*game)->mapSize - 1 || y < 0 || y > (*game)->mapSize - 1)
 				printf("  ");
 			// 플레이어 표시
-			else if (x == (*game)->charX && y == (*game)->charY) {
+			else if (x == (*game)->character.x && y == (*game)->character.y) {
 				setTextColor(COLOR.RED);
 				printf("♥");
 				setTextColor(COLOR.GREY);
@@ -411,7 +452,7 @@ void printSight(Game** game) {
 		gotoxy(startX - 1, startY + i);
 	}
 	gotoxy(0, 2);
-	printf("좌  표: (%d, %d)   ", (*game)->charX, (*game)->charY);
+	printf("좌  표: (%d, %d)   ", (*game)->character.x, (*game)->character.y);
 	gotoxy(44, 0);
 	printf("점  수: %5d", (*game)->score);
 }
