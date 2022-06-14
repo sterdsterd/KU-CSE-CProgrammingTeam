@@ -18,10 +18,10 @@ int main() {
 	for (;;) {
 		if (!isClear) {
    			int diff = initLobby();
-			// 도움말 선택 시
-			if (diff == 3) continue;
+			// 랭킹 또는 도움말 선택 시
+			if (diff == 3 || diff == 4) continue;
 			// 게임 종료 선택 시
-			else if (diff == 4) break;
+			else if (diff == 5) break;
 			else {
 				game = new_Game(diff, 0);
 			}
@@ -136,12 +136,15 @@ int initLobby() {
 	printString(18, 27, "│          HARD           │");
 	printString(18, 28, "└─────────────────────────┘");
 	printString(18, 30, "┌─────────────────────────┐");
-	printString(18, 31, "│         도움말          │");
+	printString(18, 31, "│          랭킹           │");
 	printString(18, 32, "└─────────────────────────┘");
 	printString(18, 34, "┌─────────────────────────┐");
-	printString(18, 35, "│          종료           │");
+	printString(18, 35, "│         도움말          │");
 	printString(18, 36, "└─────────────────────────┘");
-	printString(18, 38, " ↑/↓, ENTER 키로 메뉴 선택");
+	printString(18, 38, "┌─────────────────────────┐");
+	printString(18, 39, "│          종료           │");
+	printString(18, 40, "└─────────────────────────┘");
+	printString(18, 42, " ↑/↓, ENTER 키로 메뉴 선택");
 	while (1) {
 		key = _getch();
 		if (key == 224) {
@@ -153,9 +156,9 @@ int initLobby() {
 			printString(18, 20 + 4 * diff, "└─────────────────────────┘");
 			key = _getch();
 			if (key == 72) {
-				if (--diff < 0) diff = 4;
+				if (--diff < 0) diff = 5;
 			} else if (key == 80) {
-				if (++diff > 4) diff = 0;
+				if (++diff > 5) diff = 0;
 			}
 			setTextColor(COLOR.RED);
 			printString(17, 19 + 4 * diff, ">");
@@ -169,10 +172,13 @@ int initLobby() {
 		} else if (key == 13) {
 			switch (diff) {
 			case 3:
+				initRank(NULL);
+				break;
+			case 4:
 				initHelp();
-			default:
-				return diff;
+				break;
 			}
+			return diff;
 		}
 	}
 }
@@ -294,50 +300,56 @@ int playGame(Game** game) {
 		if ((end = clock()) - start > 100) {
 			start = clock();
 			for (int i = 0; i < 1; i++) {
-				if (ch == 'w' || ch == 'a' || ch == 's' || ch == 'd') {
-					int k = rand() % 4;
-					int mDx = 0, mDy = 0;
-					int dx[] = { -1,0,0,1 };
-					int dy[] = { 0,-1,1,0 };
-					int v[4];
-					int sum = 0;
-					int check = 0;
-					for (int j = 0; j < 4; j++) {
-						if (((*game)->map)[(*game)->monster.x+dx[j]][(*game)->monster.y+dy[j]].category == CATEGORY.WALL) {
-							v[j] = 0;
-						}
-						else {
-							v[j] = ((*game)->monster.visitedCount)[(*game)->monster.x + dx[j]][(*game)->monster.y + dy[j]];
-							check = 1;
-						}
+				int mDx = 0, mDy = 0;
+				int dx[] = { -1, 0, 0, 1 };
+				int dy[] = { 0, -1, 1, 0 };
+				int v[4];
+				int sum = 0;
+				int check = 0;
+				for (int j = 0; j < 4; j++) {
+					if (((*game)->map)[(*game)->monster.x+dx[j]][(*game)->monster.y+dy[j]].category == CATEGORY.WALL) {
+						v[j] = 0;
 					}
-					int lcmResult = lcm(v);
-					for (int j = 0; j < 4; j++) {
-						if (v[j] == 0)continue;
-						v[j] = lcmResult / v[j];
+					else {
+						v[j] = ((*game)->monster.visitedCount)[(*game)->monster.x + dx[j]][(*game)->monster.y + dy[j]];
+						check = 1;
+					}
+				}
+				int lcmResult = lcm(v);
+				for (int j = 0; j < 4; j++) {
+					if (v[j] == 0) continue;
+					v[j] = lcmResult / v[j];
 						
-						sum += v[j];
-						if (j > 0) v[j] += v[j - 1];
-					}
+					sum += v[j];
+					if (j > 0) v[j] += v[j - 1];
+				}
 
-					int r = rand() % sum;
-					for (int j = 0; j < 4; j++) {
-						if (r < v[j]) {
-							mDx = dx[j];
-							mDy = dy[j];
-							break;
-						}
+				int r = rand() % sum;
+				for (int j = 0; j < 4; j++) {
+					if (r < v[j]) {
+						mDx = dx[j];
+						mDy = dy[j];
+						break;
 					}
-					((*game)->map)[(*game)->monster.x][(*game)->monster.y].category = CATEGORY.BLANK;
-					(*game)->monster.x += mDx;
-					(*game)->monster.y += mDy;
-					((*game)->map)[((*game)->monster.x)][((*game)->monster.y)].category = CATEGORY.MONSTER;
-					(*game)->monster.visitedCount[((*game)->monster.x)][((*game)->monster.y)]++;
+				}
+				((*game)->map)[(*game)->monster.x][(*game)->monster.y].category = CATEGORY.BLANK;
+				(*game)->monster.x += mDx;
+				(*game)->monster.y += mDy;
+				((*game)->map)[((*game)->monster.x)][((*game)->monster.y)].category = CATEGORY.MONSTER;
+				(*game)->monster.visitedCount[((*game)->monster.x)][((*game)->monster.y)]++;
+				
+				// 플레이어를 만났을 때
+				if ((*game)->monster.x == (*game)->character.x && (*game)->monster.y == (*game)->character.y) {
+					(*game)->gameOverStr[0] = "다른 생존자와 대치했습니다.";
+					(*game)->gameOverStr[1] = "당신은 있는 힘을 다해 상대방과 싸웠지만 결국 치명상을 얻고 사망하였습니다...";
+					return 1;
+				}
 
-					int c = collisionCheck(game, 0, 0);
-					if (c == 1) return c;
-					
-					else continue;
+				// 다른 플레이어가 성배를 찾았을 때
+				if ((*game)->monster.x == (*game)->treasure.x && (*game)->monster.y == (*game)->treasure.y) {
+					(*game)->gameOverStr[0] = "다른 생존자가 성배를 먼저 찾았습니다.";
+					(*game)->gameOverStr[1] = "당신은 최종 승리자가 되지 못하여 사망하였습니다...";
+					return 1;
 				}
 			}
 			printSight(game);
@@ -353,6 +365,8 @@ int collisionCheck(Game** game, int dx, int dy) {
 		return -1;
 
 	} else if (category == CATEGORY.MONSTER) {
+		(*game)->gameOverStr[0] = "다른 생존자와 대치했습니다.";
+		(*game)->gameOverStr[1] = "당신은 있는 힘을 다해 상대방과 싸웠지만 결국 치명상을 얻고 사망하였습니다...";
 		return 1;
 
 	} else if (category == CATEGORY.TREASURE) {
@@ -429,7 +443,11 @@ int collisionCheck(Game** game, int dx, int dy) {
 	(*game)->character.y += dy;
 	(*game)->score++;
 	// 이동횟수 감소 및 없으면 게임 오버
-	if (--((*game)->moveCount) < 0) return 1;
+	if (--((*game)->moveCount) < 0) {
+		(*game)->gameOverStr[0] = "음식의 섭취 없이 계속 걷다 보니 눈 앞이 흐려집니다...";
+		(*game)->gameOverStr[1] = "탈수 증세로 당신이 쓰러졌습니다.";
+		return 1;
+	}
 
 	return 0;
 }
@@ -482,24 +500,27 @@ void printSight(Game** game) {
 void initRank(Game** game) {
 	static Score rank[10];
 	static int rankSize = 0;
+	
+	if (game != NULL) {
+		gotoxy(10, 20);
+		printf("SCORE: %5d", (*game)->score);
 
-	gotoxy(10, 20);
-	printf("SCORE: %5d", (*game)->score);
+		if (rankSize == 10 && rank[9].score < (*game)->score) {
+			printString(10, 21, "NAME : ");
+			scanf("%9s", &rank[9].name);
+			rank[9].score = (*game)->score;
+		}
+		else if (rankSize < 10) {
+			printString(10, 21, "NAME : ");
+			scanf("%9s", &rank[rankSize].name);
+			rank[rankSize].score = (*game)->score;
+			rankSize++;
+		}
 
-	if (rankSize == 10 && rank[9].score < (*game)->score) {
-		printString(10, 21, "NAME : ");
-		scanf("%9s", &rank[9].name);
-		rank[9].score = (*game)->score;
+		sort(rank, rankSize);
+		(*game)->score = 0;
+		free(*game);
 	}
-	else if (rankSize < 10) {
-		printString(10, 21, "NAME : ");
-		scanf("%9s", &rank[rankSize].name);
-		rank[rankSize].score = (*game)->score;
-		rankSize++;
-	}
-
-	sort(rank, rankSize);
-	(*game)->score = 0;
 	cls();
 	printString(15, 10, " _____             _    _             ");
 	printString(15, 11, "|  __ \\           | |  (_)            ");
@@ -510,12 +531,16 @@ void initRank(Game** game) {
 	printString(15, 16, "                                 __/ |");
 	printString(15, 17, "                                |___/ ");
 
-	for (int i = 0; i < rankSize; i++) {
-		gotoxy(15, 19 + i);
-		printf("%10s: %5d점\n", rank[i].name, rank[i].score);
+	if (rank[0].score != NULL) {
+		for (int i = 0; i < rankSize; i++) {
+			gotoxy(15, 19 + i);
+			printf("%10s: %5d점\n", rank[i].name, rank[i].score);
+		}
+	} else {
+		gotoxy(15, 19);
+		printf("플레이 기록이 존재하지 않습니다.");
 	}
 	_getch();
-	free(*game);
 }
 
 void gameClear(Game** game) {
@@ -558,9 +583,9 @@ void gameOver(Game** game) {
 	printString(11, 14, "| |__| | (_| | | | | | |  __/ | |__| |\\ V /  __/ |");
 	printString(11, 15, " \\_____|\\__,_|_| |_| |_|\\___|  \\____/  \\_/ \\___|_|");
 
-	printString(11, 17, "음식의 섭취 없이 계속 걷다 보니 눈 앞이 흐려집니다...");
-	printString(17, 18, "탈수 증세로 당신이 쓰러졌습니다.");
-
+	printString((100 - strlen((*game)->gameOverStr[0])) / 4, 17, (*game)->gameOverStr[0]);
+	printString((100 - strlen((*game)->gameOverStr[1])) / 4, 18, (*game)->gameOverStr[1]);
+	
 	initRank(game);
 }
 

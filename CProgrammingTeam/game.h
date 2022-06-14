@@ -30,6 +30,7 @@ typedef struct Game {
 	// Variables
 	int score, moveCount;
 	int sightSize;
+	char* gameOverStr[2];
 	Coord character;
 	Coord treasure;
 	Monster monster;
