@@ -51,7 +51,7 @@ int main() {
 			isClear = 0;
 		}
 	}
-
+	
 	return 0;
 }
 
@@ -245,8 +245,8 @@ void generateItem(Game** game, int amount, char category, int max) {
 			(*game)->treasure.y = y;
 		}
 		else if (((*game)->map)[x][y].category == CATEGORY.MONSTER) {
-			(*game)->monster.x = x;
-			(*game)->monster.y = y;
+			((*game)->monsters)[i].x = x;
+			((*game)->monsters)[i].y = y;
 		}
 	}
 }
@@ -260,7 +260,7 @@ void initGame(Game** game) {
 	generateItem(game, (*game)->objectAmount, CATEGORY.DECREASE_SIGHT, 2);
 	generateItem(game, (*game)->objectAmount, CATEGORY.HINT, 1);
 	generateItem(game, 1, CATEGORY.TREASURE, 1);
-	generateItem(game, 1, CATEGORY.MONSTER, 1);
+	generateItem(game, (*game)->monsterAmount, CATEGORY.MONSTER, 1);
 
 	for (int i = 0; i < 1; i++) {
 		int x = rand() % ((*game)->mapSize - 2) + 1;
@@ -299,20 +299,18 @@ int playGame(Game** game) {
 		
 		if ((end = clock()) - start > 100) {
 			start = clock();
-			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < (*game)->monsterAmount; i++) {
 				int mDx = 0, mDy = 0;
 				int dx[] = { -1, 0, 0, 1 };
 				int dy[] = { 0, -1, 1, 0 };
 				int v[4];
 				int sum = 0;
-				int check = 0;
 				for (int j = 0; j < 4; j++) {
-					if (((*game)->map)[(*game)->monster.x+dx[j]][(*game)->monster.y+dy[j]].category == CATEGORY.WALL) {
+					if (((*game)->map)[((*game)->monsters)[i].x + dx[j]][((*game)->monsters)[i].y + dy[j]].category == CATEGORY.WALL) {
 						v[j] = 0;
 					}
 					else {
-						v[j] = ((*game)->monster.visitedCount)[(*game)->monster.x + dx[j]][(*game)->monster.y + dy[j]];
-						check = 1;
+						v[j] = (((*game)->monsters)[i].visitedCount)[((*game)->monsters)[i].x + dx[j]][((*game)->monsters)[i].y + dy[j]];
 					}
 				}
 				int lcmResult = lcm(v);
@@ -332,24 +330,26 @@ int playGame(Game** game) {
 						break;
 					}
 				}
-				((*game)->map)[(*game)->monster.x][(*game)->monster.y].category = CATEGORY.BLANK;
-				(*game)->monster.x += mDx;
-				(*game)->monster.y += mDy;
-				((*game)->map)[((*game)->monster.x)][((*game)->monster.y)].category = CATEGORY.MONSTER;
-				(*game)->monster.visitedCount[((*game)->monster.x)][((*game)->monster.y)]++;
+				((*game)->map)[((*game)->monsters)[i].x][((*game)->monsters)[i].y].category = CATEGORY.BLANK;
+				((*game)->monsters)[i].x += mDx;
+				((*game)->monsters)[i].y += mDy;
+				((*game)->monsters)[i].visitedCount[((*game)->monsters)[i].x][((*game)->monsters)[i].y]++;
 				
 				// 플레이어를 만났을 때
-				if ((*game)->monster.x == (*game)->character.x && (*game)->monster.y == (*game)->character.y) {
+				if (((*game)->monsters)[i].x == (*game)->character.x && ((*game)->monsters)[i].y == (*game)->character.y) {
 					(*game)->gameOverStr[0] = "다른 생존자와 대치했습니다.";
 					(*game)->gameOverStr[1] = "당신은 있는 힘을 다해 상대방과 싸웠지만 결국 치명상을 얻고 사망하였습니다...";
 					return 1;
 				}
 
 				// 다른 플레이어가 성배를 찾았을 때
-				if ((*game)->monster.x == (*game)->treasure.x && (*game)->monster.y == (*game)->treasure.y) {
+				if (((*game)->monsters)[i].x == (*game)->treasure.x && ((*game)->monsters)[i].y == (*game)->treasure.y) {
 					(*game)->gameOverStr[0] = "다른 생존자가 성배를 먼저 찾았습니다.";
 					(*game)->gameOverStr[1] = "당신은 최종 승리자가 되지 못하여 사망하였습니다...";
 					return 1;
+				}
+				for (int i = 0; i < (*game)->monsterAmount; i++) {
+					((*game)->map)[((*game)->monsters)[i].x][((*game)->monsters)[i].y].category = CATEGORY.MONSTER;
 				}
 			}
 			printSight(game);
@@ -566,9 +566,11 @@ void gameClear(Game** game) {
 void destroyMap(Game** game, int mapSize) {
 	free(((*game)->map)[0]);
 	free(((*game)->map));
-
-	free(((*game)->monster.visitedCount)[0]);
-	free((*game)->monster.visitedCount);
+	for (int i = 0; i < (*game)->monsterAmount; i++) {
+		free((((*game)->monsters)[i].visitedCount)[0]);
+		free(((*game)->monsters)[i].visitedCount);
+	}
+	free((*game)->monsters);
 }
 
 void gameOver(Game** game) {

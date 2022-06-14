@@ -23,6 +23,7 @@ typedef struct Difficulty {
 	int minSight;
 	int objectAmount;
 	int maxMoveAmount;
+	int monsterAmount;
 } Difficulty;
 
 const struct {
@@ -42,7 +43,7 @@ int initLobby();
 void generateMaze();
 void generateItem(int amount, char category, int max);
 void initGame();
-void destroyMap(int* mapSize);
+void destroyMap(int* mapsize);
 void initHelp();
 void printSight();
 void clearSight();
