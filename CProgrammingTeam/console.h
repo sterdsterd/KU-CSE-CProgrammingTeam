@@ -95,9 +95,9 @@ void categoryToChar(char c) {
 		setTextColor(COLOR.GREY);
 	} else {
 		setTextColor(COLOR.YELLOW);
-		//printf("¡Ú");
+		printf("¡Ú");
 		// DEBUG
-		printf("%c ", c);
+		//printf("%c ", c);
 		setTextColor(COLOR.GREY);
 	}
 }
