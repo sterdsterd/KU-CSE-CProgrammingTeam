@@ -58,6 +58,7 @@ Game* new_Game(int difficulty, int score) {
 	_this->treasure.y = 0;
 	
 	_this->monsters = (Monster*)malloc(sizeof(Monster*) * difficultyCons[difficulty].monsterAmount);
+
 	for (int i = 0; i < difficultyCons[difficulty].monsterAmount;i++) {
 		(_this->monsters)[i].visitedCount = (int**)malloc(sizeof(int*) * difficultyCons[difficulty].mapSize);
 		((_this->monsters)[i].visitedCount)[0] = (int*)malloc(sizeof(int) * difficultyCons[difficulty].mapSize * difficultyCons[difficulty].mapSize);

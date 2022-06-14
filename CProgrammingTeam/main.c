@@ -570,7 +570,7 @@ void destroyMap(Game** game, int mapSize) {
 		free((((*game)->monsters)[i].visitedCount)[0]);
 		free(((*game)->monsters)[i].visitedCount);
 	}
-	free((*game)->monsters);
+	//free((*game)->monsters);
 }
 
 void gameOver(Game** game) {
