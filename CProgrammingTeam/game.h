@@ -4,11 +4,11 @@
 // 난이도 조절
 const Difficulty difficultyCons[3] = {
 	// EASY
-	{.mapSize = 15, .sightSize = 30, .moveCount = 80, .minSight = 5, .maxSight = 15, .objectAmount = 4, .maxMoveAmount = 5},
+	{.mapSize = 17, .sightSize = 7, .moveCount = 100, .minSight = 5, .maxSight = 15, .objectAmount = 4, .maxMoveAmount = 5},
 	// NORMAL
-	{.mapSize = 25, .sightSize = 9, .moveCount = 200, .minSight = 13, .maxSight = 17, .objectAmount = 6, .maxMoveAmount = 15},
+	{.mapSize = 45, .sightSize = 17, .moveCount = 200, .minSight = 11, .maxSight = 23, .objectAmount = 20, .maxMoveAmount = 25},
 	// HARD
-	{.mapSize = 35, .sightSize = 21, .moveCount = 250, .minSight = 15, .maxSight = 27, .objectAmount = 8, .maxMoveAmount = 35}
+	{.mapSize = 71, .sightSize = 21, .moveCount = 250, .minSight = 15, .maxSight = 27, .objectAmount = 45, .maxMoveAmount = 35}
 };
 
 typedef struct Monster {
